@@ -8,7 +8,10 @@ public static class Setup
 {
     public static IServiceCollection AddNpbApiClient(this IServiceCollection services)
     {
-        services.AddHttpClient<INbpApiClient>((serviceProvider, httpClient) =>
+        services.AddScoped<LoggingDelegatingHandler>();
+
+        services.AddScoped<INbpApiClient, NbpApiClient>();
+        services.AddHttpClient<INbpApiClient, NbpApiClient>((serviceProvider, httpClient) =>
         {
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
             var url = configuration["NbpApi:BaseUrl"];
@@ -18,8 +21,6 @@ public static class Setup
 
             httpClient.BaseAddress = new Uri(url);
         }).AddHttpMessageHandler<LoggingDelegatingHandler>();
-
-        services.AddScoped<INbpApiClient, NbpApiClient>();
 
         return services;
     }

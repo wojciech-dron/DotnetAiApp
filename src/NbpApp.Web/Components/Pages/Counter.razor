@@ -9,12 +9,19 @@
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
+@inject IMediator Mediatr
+@using MediatR
+@using NbpApp.Web.Logic
+
 @code {
     private int currentCount = 0;
 
-    private void IncrementCount()
+    private async Task IncrementCount()
     {
         currentCount++;
+        var command = new GetAndSaveGoldPrices.Command(new DateOnly(2024, 12, 1));
+
+        var result = await Mediatr.Send(command);
     }
 
 }

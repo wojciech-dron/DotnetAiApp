@@ -54,7 +54,7 @@ public class LoggingDelegatingHandler : DelegatingHandler
         }
     }
 
-    private static async Task<string> GetRequestBody(HttpRequestMessage request,
+    private static async Task<string?> GetRequestBody(HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
         if (request.Content is null)
