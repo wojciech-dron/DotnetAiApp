@@ -42,8 +42,8 @@
 @code {
     private GoldPriceResult? Result;
 
-    private DateOnly StartDate { get; set; } = DateOnly.FromDateTime(DateTime.Now.AddDays(-30));
-    private DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+    private DateOnly StartDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-30));
+    private DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
     private async Task FetchGoldPrices()
     {
         var command = new GetAndSaveGoldPrices.Command(StartDate, EndDate);

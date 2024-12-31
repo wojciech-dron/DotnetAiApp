@@ -1,6 +1,7 @@
 ﻿using MediatR.Pipeline;
 using NbpApp.Db;
 using NbpApp.NbpApiClient;
+using NbpApp.Web.FileProvider;
 using NbpApp.Web.Logic.Behaviours;
 
 namespace NbpApp.Web;
@@ -11,6 +12,7 @@ public static class Setup
     {
         services
             .AddMediatrForNbpApp()
+            .AddFileProvider()
             .AddNbpAppDb()
             .AddNpbApiClient();
 
@@ -27,6 +29,11 @@ public static class Setup
         services.AddTransient(typeof(IRequestExceptionHandler<,,>), typeof(ExceptionLoggingHandler<,,>));
 
         return services;
+    }
+
+    private static IServiceCollection AddFileProvider(this IServiceCollection services)
+    {
+        return services.AddScoped<IFileProvider, StaticFileProvider>();
     }
 }
 

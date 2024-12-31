@@ -1,9 +1,11 @@
-﻿using MediatR;
+﻿using System.Text.Json;
+using MediatR;
 using NbpApp.Db.Entities;
 using NbpApp.Db.Repos;
 using NbpApp.NbpApiClient;
 using NbpApp.NbpApiClient.Contracts;
 using NbpApp.Web.Common;
+using NbpApp.Web.FileProvider;
 
 namespace NbpApp.Web.Logic;
 
@@ -15,11 +17,15 @@ public class GetAndSaveGoldPrices
     {
         private readonly INbpApiClient _nbpApiClient;
         private readonly IGoldPriceRepository _goldRepo;
+        private readonly IFileProvider _fileProvider;
 
-        public Handler(INbpApiClient nbpApiClient, IGoldPriceRepository goldRepo)
+        public Handler(INbpApiClient nbpApiClient,
+            IGoldPriceRepository goldRepo,
+            IFileProvider fileProvider)
         {
             _nbpApiClient = nbpApiClient;
             _goldRepo = goldRepo;
+            _fileProvider = fileProvider;
         }
 
         public async Task<GoldPriceResult> Handle(Command request, CancellationToken cancellationToken)
@@ -38,6 +44,7 @@ public class GetAndSaveGoldPrices
             }
 
             await SavePricesToDb(goldPrices, cancellationToken);
+            await SavePricesToJsonFile(goldPrices, cancellationToken);
 
             return new GoldPriceResult
             {
@@ -56,6 +63,14 @@ public class GetAndSaveGoldPrices
             });
 
             await _goldRepo.AddOrUpdatePrices(entities, cancellationToken);
+        }
+
+        private async Task SavePricesToJsonFile(NpbPriceDto[] goldPrices, CancellationToken cancellationToken)
+        {
+            var fileName = $"gold_prices_request_{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}.json";
+            var json = JsonSerializer.Serialize(goldPrices);
+
+            await _fileProvider.WriteTextAsync(fileName, json, cancellationToken);
         }
     }
 }
