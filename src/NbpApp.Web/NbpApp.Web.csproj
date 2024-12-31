@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\NbpApp.Db\NbpApp.Db.csproj" />
       <ProjectReference Include="..\NbpApp.NbpApiClient\NbpApp.NbpApiClient.csproj" />
     </ItemGroup>
 

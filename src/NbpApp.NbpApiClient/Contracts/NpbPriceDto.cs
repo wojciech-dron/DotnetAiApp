@@ -2,7 +2,7 @@
 
 namespace NbpApp.NbpApiClient.Contracts;
 
-public class NpbPrice
+public class NpbPriceDto
 {
     [JsonPropertyName("data")]
     public DateOnly Date { get; init; }

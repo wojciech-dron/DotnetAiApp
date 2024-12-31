@@ -42,7 +42,7 @@ public class LoggingDelegatingHandler : DelegatingHandler
 
             if (response.IsSuccessStatusCode) // 2XX
             {
-                _logger.LogTrace("Received {Status} response: {Method} {RequestUrl}, response: {ResponseBody}",
+                _logger.LogInformation("Received {Status} response: {Method} {RequestUrl}, response: {ResponseBody}",
                     response.StatusCode, method, requestUrl, responseBody);
             }
             else

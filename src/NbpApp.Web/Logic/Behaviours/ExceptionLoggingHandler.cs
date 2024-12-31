@@ -24,7 +24,7 @@ public class ExceptionLoggingHandler<TRequest, TResponse, TException>
         _logger.LogError(exception, "An error occurred while handling the request.\r\n" +
                                     "Message: {Message}\r\n" +
                                     "Request body: {RequestBody}",
-            JsonSerializer.Serialize(request), exception.Message);
+            exception.Message, JsonSerializer.Serialize(request));
 
         state.SetHandled(new TResponse { ErrorMessage = exception.Message });
 

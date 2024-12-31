@@ -1,3 +1,4 @@
+using NbpApp.Db;
 using NbpApp.Web;
 using NbpApp.Web.Components;
 
@@ -25,5 +26,7 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.Services.PrepareDb();
 
 app.Run();

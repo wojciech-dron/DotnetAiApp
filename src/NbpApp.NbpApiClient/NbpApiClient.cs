@@ -6,7 +6,7 @@ namespace NbpApp.NbpApiClient;
 
 public interface INbpApiClient
 {
-    public Task<NpbPrice[]> GetGoldPricesAsync(
+    public Task<NpbPriceDto[]> GetGoldPricesAsync(
         DateOnly startDate,
         DateOnly endDate,
         CancellationToken cancellationToken = default);
@@ -21,7 +21,7 @@ internal class NbpApiClient : INbpApiClient
         _client = client;
     }
 
-    public async Task<NpbPrice[]> GetGoldPricesAsync(DateOnly startDate, DateOnly endDate,
+    public async Task<NpbPriceDto[]> GetGoldPricesAsync(DateOnly startDate, DateOnly endDate,
         CancellationToken cancellationToken = default)
     {
         var requestUrl = $"cenyzlota/{startDate:yyyy-MM-dd}/{endDate:yyyy-MM-dd}";
@@ -31,7 +31,7 @@ internal class NbpApiClient : INbpApiClient
         if (!response.IsSuccessStatusCode)
             throw new ApplicationException($"Failed to get gold prices. Status code: {response.StatusCode}");
 
-        var content = await response.Content.ReadFromJsonAsync<NpbPrice[]>(cancellationToken);
+        var content = await response.Content.ReadFromJsonAsync<NpbPriceDto[]>(cancellationToken);
 
         if (content == null)
             throw new ApplicationException("Failed to deserialize NbpPrices");
