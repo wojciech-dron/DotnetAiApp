@@ -5,7 +5,7 @@ using NbpApp.Db.Repos;
 using NbpApp.NbpApiClient;
 using NbpApp.NbpApiClient.Contracts;
 using NbpApp.Web.Common;
-using NbpApp.Web.FileProvider;
+using NbpApp.Utils.FileProvider;
 
 namespace NbpApp.Web.Logic;
 

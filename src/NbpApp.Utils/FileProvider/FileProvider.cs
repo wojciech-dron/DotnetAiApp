@@ -1,8 +1,11 @@
-﻿namespace NbpApp.Web.FileProvider;
+﻿using Microsoft.Extensions.Configuration;
+
+namespace NbpApp.Utils.FileProvider;
 
 public interface IFileProvider
 {
-    public Task WriteTextAsync(string fileName, string content, CancellationToken cancellationToken = default);
+    public Task<string> WriteTextAsync(string fileName, string content,
+        CancellationToken cancellationToken = default);
 }
 
 public class StaticFileProvider : IFileProvider
@@ -14,7 +17,8 @@ public class StaticFileProvider : IFileProvider
         _configuration = configuration;
     }
 
-    public async Task WriteTextAsync(string fileName, string content, CancellationToken cancellationToken = default)
+    public async Task<string> WriteTextAsync(string fileName, string content,
+        CancellationToken cancellationToken = default)
     {
         var uploadPath = _configuration["FileProvider:UploadPath"];
 
@@ -25,5 +29,7 @@ public class StaticFileProvider : IFileProvider
 
         var filePath = Path.Combine(uploadPath, fileName);
         await File.WriteAllTextAsync(filePath, content, cancellationToken);
+
+        return filePath;
     }
 }

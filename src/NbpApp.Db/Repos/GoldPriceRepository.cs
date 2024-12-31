@@ -5,7 +5,8 @@ namespace NbpApp.Db.Repos;
 
 public interface IGoldPriceRepository
 {
-    public Task AddOrUpdatePrices(IEnumerable<GoldPrice> prices, CancellationToken cancellationToken);
+    public Task AddOrUpdatePrices(IEnumerable<GoldPrice> prices,
+        CancellationToken cancellationToken = default);
 }
 
 internal class GoldPriceRepository : IGoldPriceRepository
@@ -17,7 +18,8 @@ internal class GoldPriceRepository : IGoldPriceRepository
         _context = context;
     }
 
-    public async Task AddOrUpdatePrices(IEnumerable<GoldPrice> entities, CancellationToken cancellationToken)
+    public async Task AddOrUpdatePrices(IEnumerable<GoldPrice> entities,
+        CancellationToken cancellationToken = default)
     {
         await _context.BulkInsertOrUpdateAsync(entities, cancellationToken: cancellationToken);
     }

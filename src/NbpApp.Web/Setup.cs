@@ -1,20 +1,22 @@
 ﻿using MediatR.Pipeline;
+using NbpApp.Ai;
 using NbpApp.Db;
 using NbpApp.NbpApiClient;
-using NbpApp.Web.FileProvider;
+using NbpApp.Utils;
 using NbpApp.Web.Logic.Behaviours;
 
 namespace NbpApp.Web;
 
 public static class Setup
 {
-    public static IServiceCollection AddNbpAppWebServices(this IServiceCollection services)
+    public static IServiceCollection AddNbpAppWebServices(this IServiceCollection services,
+        IConfiguration configuration)
     {
-        services
-            .AddMediatrForNbpApp()
-            .AddFileProvider()
-            .AddNbpAppDb()
-            .AddNpbApiClient();
+        services.AddMediatrForNbpApp();
+        services.AddStaticFileProvider();
+        services.AddNbpAppDb();
+        services.AddNpbApiClient();
+        services.AddAiModule(configuration);
 
         return services;
     }
@@ -31,9 +33,5 @@ public static class Setup
         return services;
     }
 
-    private static IServiceCollection AddFileProvider(this IServiceCollection services)
-    {
-        return services.AddScoped<IFileProvider, StaticFileProvider>();
-    }
 }
 
