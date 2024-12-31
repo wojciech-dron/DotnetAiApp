@@ -3,13 +3,13 @@
 
 <PageTitle>Nbp gold prices</PageTitle>
 
-<div class="row justify-content-center">
+<div class="mb-3">
     <div class="form-floating mb-3">
-        <input type="date" class="form-control" placeholder="" @bind="StartDate">
+        <input type="date" class="form-control" @bind="StartDate">
         <label>Start date</label>
     </div>
     <div class="form-floating mb-3">
-        <input type="date" class="form-control" placeholder="" @bind="EndDate">
+        <input type="date" class="form-control" @bind="EndDate">
         <label>End date</label>
     </div>
     <button class="btn btn-primary" @onclick="FetchGoldPrices">Fetch gold prices</button>
@@ -18,7 +18,7 @@
 
 @if (Result?.IsSuccess == true)
 {
-    <div class="row justify-content-center">
+    <div class="mb-3">
         <h3>Results:</h3>
         <p>Start date price: @Result.StartDatePrice.ToString("F2")</p>
         <p>End date price: @Result.EndDatePrice.ToString("F2")</p>
@@ -28,7 +28,7 @@
 
 @if (Result?.IsSuccess == false)
 {
-    <div class="row justify-content-center">
+    <div class="mb-3">
         <h3>Error occurred when fetching data</h3>
         <p>@Result.ErrorMessage</p>
     </div>
@@ -42,8 +42,8 @@
 @code {
     private GoldPriceResult? Result;
 
-    private DateOnly StartDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-30));
-    private DateOnly? EndDate { get; set; }
+    private DateOnly StartDate { get; set; } = DateOnly.FromDateTime(DateTime.Now.AddDays(-30));
+    private DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
     private async Task FetchGoldPrices()
     {
         var command = new GetAndSaveGoldPrices.Command(StartDate, EndDate);

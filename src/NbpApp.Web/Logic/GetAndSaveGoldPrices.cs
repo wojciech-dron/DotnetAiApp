@@ -6,7 +6,7 @@ namespace NbpApp.Web.Logic;
 
 public class GetAndSaveGoldPrices
 {
-    public record Command(DateOnly StartDate, DateOnly? EndDate = null) : IRequest<GoldPriceResult>;
+    public record Command(DateOnly StartDate, DateOnly EndDate) : IRequest<GoldPriceResult>;
 
     class Handler : IRequestHandler<Command, GoldPriceResult>
     {

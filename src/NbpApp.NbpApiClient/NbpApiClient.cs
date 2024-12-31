@@ -8,7 +8,7 @@ public interface INbpApiClient
 {
     public Task<NpbPrice[]> GetGoldPricesAsync(
         DateOnly startDate,
-        DateOnly? endDate = null,
+        DateOnly endDate,
         CancellationToken cancellationToken = default);
 }
 
@@ -21,15 +21,12 @@ internal class NbpApiClient : INbpApiClient
         _client = client;
     }
 
-    public async Task<NpbPrice[]> GetGoldPricesAsync(DateOnly startDate, DateOnly? endDate = null,
+    public async Task<NpbPrice[]> GetGoldPricesAsync(DateOnly startDate, DateOnly endDate,
         CancellationToken cancellationToken = default)
     {
-        var requestUrl = new StringBuilder($"cenyzlota/{startDate:yyyy-MM-dd}");
+        var requestUrl = $"cenyzlota/{startDate:yyyy-MM-dd}/{endDate:yyyy-MM-dd}";
 
-        if (endDate.HasValue)
-            requestUrl.Append($"/{endDate.Value:yyyy-MM-dd}");
-
-        var response = await _client.GetAsync(requestUrl.ToString(), cancellationToken);
+        var response = await _client.GetAsync(requestUrl, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
             throw new ApplicationException($"Failed to get gold prices. Status code: {response.StatusCode}");
