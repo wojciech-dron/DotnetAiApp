@@ -2,13 +2,14 @@
 
 This is demo for fetching gold prices from [NBP API](https://api.nbp.pl/en.html)
 with db and file saving.
+
 Demo provides basic ai features.
 
 ## Getting started
 
 To run application, execute the following command in the project root folder:
 ```bash
-    dotnet run
+    dotnet run -p .\src\NbpApp.Web\
 ```
 
 ## Pre-requisites
@@ -23,7 +24,7 @@ Run ollama on docker with port 11434:
    docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
 ```
 
-Run llama3.2 on ollama
+Run llama3.2 on ollama:
 
 ```bash
   docker exec -it ollama ollama run llama3.2
