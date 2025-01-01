@@ -1,0 +1,85 @@
+﻿@page "/chat"
+@rendermode InteractiveServer
+
+@using System.ComponentModel.DataAnnotations
+@using MediatR
+@using Microsoft.SemanticKernel
+@using Microsoft.SemanticKernel.ChatCompletion
+@using NbpApp.Web.Logic
+
+<h3 class="mb-4">AI Chat</h3>
+
+<div class="chat-container">
+    <div class="messages p-3 border rounded mb-3" style="max-height: 400px; overflow-y: auto;">
+        @foreach (var message in visibleMessages)
+        {
+            @if (message.Role == AuthorRole.User)
+            {
+                <div class="message user-message">
+                    <strong>@("You:")</strong>
+                    @message.Content
+                </div>
+            }
+
+            @if (message.Role == AuthorRole.Assistant && !string.IsNullOrWhiteSpace(message.Content))
+            {
+                <div class="message ai-message">
+                    <strong>@("AI:")</strong>
+                    @message.Content
+                </div>
+            }
+        }
+    </div>
+
+    <EditForm Model="@this" OnValidSubmit="@SendMessage">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <input type="text" @bind="userInput" class="form-control mb-2"
+               placeholder="Type a message..."  />
+
+        <button type="submit" class="btn btn-primary @(isLoading ? "disabled" : "")">
+            @(isLoading ? "Sending..." : "Send")
+        </button>
+    </EditForm>
+</div>
+
+@inject IMediator mediator;
+
+@code {
+    private ChatHistory history = new();
+    private bool isLoading;
+
+    [StringLength(50, MinimumLength = 3, ErrorMessage = "Input length must be between 3 and 500 characters.")]
+    private string userInput { get; set; } = string.Empty;
+
+    public IEnumerable<ChatMessageContent> visibleMessages => history
+        .Where(m => m.Content.Length > 0)
+        .Where(m => m.Role == AuthorRole.Assistant || m.Role == AuthorRole.User);
+
+    protected override Task OnInitializedAsync()
+    {
+        history.AddSystemMessage(GoldAiAgent.SystemPrompt);
+        return Task.CompletedTask;
+    }
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(userInput))
+        {
+            return;
+        }
+
+        isLoading = true;
+        history.AddUserMessage(userInput);
+
+        var request = new GoldAiAgent.Request(history);
+
+        var response = await mediator.Send(request);
+        history = response.History;
+
+        userInput = "";
+        isLoading = false;
+    }
+
+
+}

@@ -14,7 +14,8 @@ namespace NbpApp.Ai;
 
 public static class Setup
 {
-    public static IServiceCollection AddAiModule(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddAiModule(this IServiceCollection services,
+        IConfiguration configuration)
     {
         services.Configure<AiSettings>(configuration.GetSection(AiSettings.SectionName));
 

@@ -5,32 +5,32 @@
 
 <div class="mb-3">
     <div class="form-floating mb-3">
-        <input type="date" class="form-control" @bind="StartDate">
+        <input type="date" class="form-control" @bind="startDate">
         <label>Start date</label>
     </div>
     <div class="form-floating mb-3">
-        <input type="date" class="form-control" @bind="EndDate">
+        <input type="date" class="form-control" @bind="endDate">
         <label>End date</label>
     </div>
     <button class="btn btn-primary" @onclick="FetchGoldPrices">Fetch gold prices</button>
 </div>
 
 
-@if (Result?.IsSuccess == true)
+@if (result?.IsSuccess == true)
 {
     <div class="mb-3">
         <h3>Results:</h3>
-        <p>Start date price: @Result.StartDatePrice.ToString("F2")</p>
-        <p>End date price: @Result.EndDatePrice.ToString("F2")</p>
-        <p>Average price: @Result.AveragePrice.ToString("F2")</p>
+        <p>Start date price: @result.StartDatePrice.ToString("F2")</p>
+        <p>End date price: @result.EndDatePrice.ToString("F2")</p>
+        <p>Average price: @result.AveragePrice.ToString("F2")</p>
     </div>
 }
 
-@if (Result?.IsSuccess == false)
+@if (result?.IsSuccess == false)
 {
     <div class="mb-3">
         <h3>Error occurred when fetching data</h3>
-        <p>@Result.ErrorMessage</p>
+        <p>@result.ErrorMessage</p>
     </div>
 }
 
@@ -40,13 +40,13 @@
 @using NbpApp.Web.Logic
 
 @code {
-    private GoldPriceResult? Result;
+    private GoldPriceResult? result;
 
-    private DateOnly StartDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-30));
-    private DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
+    private DateOnly startDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-30));
+    private DateOnly endDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
     private async Task FetchGoldPrices()
     {
-        var command = new GetAndSaveGoldPrices.Command(StartDate, EndDate);
-        Result = await Mediator.Send(command);
+        var command = new GetAndSaveGoldPrices.Command(startDate, endDate);
+        result = await Mediator.Send(command);
     }
 }
