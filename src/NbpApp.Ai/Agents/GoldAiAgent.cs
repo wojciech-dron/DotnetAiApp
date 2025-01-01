@@ -4,6 +4,7 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Ollama;
 using NbpApp.Ai.Plugins;
+using NbpApp.Utils.Utils;
 
 namespace NbpApp.Ai.Agents;
 
@@ -59,8 +60,10 @@ public class GoldAiAgent
         }
     }
 
-    public record Result(ChatHistory History)
+    public class Result(ChatHistory history) : AppResult
     {
+        public ChatHistory History { get; } = history;
+
         public static implicit operator Result(ChatHistory history) => new(history);
     }
 }

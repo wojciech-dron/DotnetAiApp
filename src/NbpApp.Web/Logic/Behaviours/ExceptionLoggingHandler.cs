@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using MediatR;
 using MediatR.Pipeline;
-using NbpApp.Web.Common;
+using NbpApp.Utils.Utils;
 
 namespace NbpApp.Web.Logic.Behaviours;
 

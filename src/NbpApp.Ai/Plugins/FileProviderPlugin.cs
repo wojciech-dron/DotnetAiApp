@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using Microsoft.SemanticKernel;
-using NbpApp.Utils.FileProvider;
+using NbpApp.Utils.Utils;
 
 namespace NbpApp.Ai.Plugins;
 

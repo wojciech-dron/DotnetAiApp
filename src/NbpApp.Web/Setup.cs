@@ -1,4 +1,6 @@
-﻿using MediatR.Pipeline;
+﻿using FluentValidation;
+using MediatR;
+using MediatR.Pipeline;
 using NbpApp.Ai;
 using NbpApp.Db;
 using NbpApp.NbpApiClient;
@@ -12,8 +14,10 @@ public static class Setup
     public static IServiceCollection AddNbpAppWebServices(this IServiceCollection services,
         IConfiguration configuration)
     {
+        services.AddValidatorsFromAssembly(typeof(Setup).Assembly);
         services.AddMediatrForNbpApp();
-        services.AddStaticFileProvider();
+
+        services.AddUtils();
         services.AddNbpAppDb();
         services.AddNpbApiClient();
         services.AddAiModule(configuration);
@@ -23,12 +27,13 @@ public static class Setup
 
     private static IServiceCollection AddMediatrForNbpApp(this IServiceCollection services)
     {
+        services.AddTransient(typeof(IRequestExceptionHandler<,,>), typeof(ExceptionLoggingHandler<,,>));
+
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(typeof(Setup).Assembly);
+            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
-
-        services.AddTransient(typeof(IRequestExceptionHandler<,,>), typeof(ExceptionLoggingHandler<,,>));
 
         return services;
     }

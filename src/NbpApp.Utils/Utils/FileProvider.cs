@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace NbpApp.Utils.FileProvider;
+namespace NbpApp.Utils.Utils;
 
 public interface IFileProvider
 {
