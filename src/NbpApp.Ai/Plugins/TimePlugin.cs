@@ -6,7 +6,7 @@ namespace NbpApp.Ai.Plugins;
 /// <summary>
 /// Simple plugin that just returns the time.
 /// </summary>
-public class MyTimePlugin
+public class TimePlugin
 {
     [KernelFunction, Description("Get the current date")]
     public string CurrentDate() => DateTimeOffset.Now.ToString("yyyy-mm-dd");

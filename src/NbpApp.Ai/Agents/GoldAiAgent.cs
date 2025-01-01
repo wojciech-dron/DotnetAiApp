@@ -1,20 +1,22 @@
 ﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Ollama;
+using NbpApp.Ai.Plugins;
 
-namespace NbpApp.Web.Logic;
+namespace NbpApp.Ai.Agents;
 
 public class GoldAiAgent
 {
-    public static readonly string SystemPrompt =
-        $$$"""
-        
-        You are a helpful assistant that helps people find information about the world.
-        You will be given a question and you must answer it.
-        If necessary you can use plugin functions.
-        Current time is {{{DateTimeOffset.Now}}}.
-        
+    public const string SystemPrompt =
+        $"""
+        You are a helpful assistant that helps retrieving and managing data about gold prices in polish zloty.
+        Show data in simple table.
+        Do not write any code or scripts, if neccessary call functions from plugins:
+        {nameof(NbpApiPlugin)},{nameof(FileProviderPlugin)} and {nameof(TimePlugin)}.
+        If you don't know the answer, just say that you don't know. Don't try to make up an answer.
+        Do not use any other plugins except those mentioned above.
         """;
 
     public record Request(ChatHistory History) : IRequest<Result>;
@@ -27,12 +29,18 @@ public class GoldAiAgent
         private static readonly OllamaPromptExecutionSettings _chatSettings = new()
         {
             FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
+            Temperature = 0.0f,
         };
 
-        public Handler(IChatCompletionService chatService, Kernel kernel)
+        public Handler(IChatCompletionService chatService,
+            IServiceProvider serviceProvider)
         {
             _chatService = chatService;
-            _kernel = kernel;
+
+            _kernel = new Kernel(serviceProvider);
+            _kernel.Plugins.AddFromType<TimePlugin>();
+            _kernel.Plugins.AddFromObject(serviceProvider.GetRequiredService<NbpApiPlugin>());
+            _kernel.Plugins.AddFromObject(serviceProvider.GetRequiredService<FileProviderPlugin>());
         }
 
         public async Task<Result> Handle(Request request, CancellationToken cancellationToken)

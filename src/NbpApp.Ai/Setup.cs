@@ -1,10 +1,11 @@
-﻿using Microsoft.Extensions.AI;
+﻿using MediatR;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using NbpApp.Ai.Agents;
 using NbpApp.Ai.Plugins;
 using NbpApp.Ai.Settings;
 using OllamaSharp;
@@ -19,7 +20,7 @@ public static class Setup
     {
         services.Configure<AiSettings>(configuration.GetSection(AiSettings.SectionName));
 
-        services.AddScoped<NbpPlugin>();
+        services.AddScoped<NbpApiPlugin>();
         services.AddScoped<FileProviderPlugin>();
 
         services.AddScoped<IChatCompletionService>(sp =>
@@ -39,17 +40,13 @@ public static class Setup
             return builder.Build(sp).AsChatCompletionService(sp);
         });
 
-        services.AddScoped<Kernel>(sp =>
-        {
-            var pluginCollection = new KernelPluginCollection();
-
-            pluginCollection.AddFromType<MyTimePlugin>();
-            pluginCollection.AddFromObject(sp.GetRequiredService<NbpPlugin>());
-            pluginCollection.AddFromObject(sp.GetRequiredService<FileProviderPlugin>());
-
-            return new Kernel(sp, pluginCollection);
-        });
+        services.AddGoldAgent();
 
         return services;
+    }
+
+    private static void AddGoldAgent(this IServiceCollection services)
+    {
+        services.AddScoped<IRequestHandler<GoldAiAgent.Request, GoldAiAgent.Result>, GoldAiAgent.Handler>();
     }
 }

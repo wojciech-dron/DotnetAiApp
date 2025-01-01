@@ -1,85 +1,94 @@
 ﻿@page "/chat"
 @rendermode InteractiveServer
 
-@using System.ComponentModel.DataAnnotations
 @using MediatR
 @using Microsoft.SemanticKernel
 @using Microsoft.SemanticKernel.ChatCompletion
-@using NbpApp.Web.Logic
+@using NbpApp.Ai.Agents
 
-<h3 class="mb-4">AI Chat</h3>
+<h3 class="mb-3" xmlns="http://www.w3.org/1999/html">AI Chat</h3>
 
 <div class="chat-container">
-    <div class="messages p-3 border rounded mb-3" style="max-height: 400px; overflow-y: auto;">
+    <div class="chat-messages p-3 border rounded mb-3" >
         @foreach (var message in visibleMessages)
         {
             @if (message.Role == AuthorRole.User)
             {
                 <div class="message user-message">
                     <strong>@("You:")</strong>
-                    @message.Content
+                    <pre>@message.Content</pre>
                 </div>
             }
 
             @if (message.Role == AuthorRole.Assistant && !string.IsNullOrWhiteSpace(message.Content))
             {
                 <div class="message ai-message">
-                    <strong>@("AI:")</strong>
-                    @message.Content
+                    <strong>@("Gold agent:")</strong>
+                    <pre>@message.Content</pre>
                 </div>
             }
+
+        }
+        @if (visibleMessages.Length == 0)
+        {
+            <div class="message placeholder-message">
+                <strong>Examples:</strong>
+                <ul>
+                    <li>What is the current date?</li>
+                    <li>Get gold prices for december 2024.</li>
+                    <li>Write content directly to file and return output path.</li>
+                </ul>
+
+            </div>
         }
     </div>
 
-    <EditForm Model="@this" OnValidSubmit="@SendMessage">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-
-        <input type="text" @bind="userInput" class="form-control mb-2"
-               placeholder="Type a message..."  />
-
-        <button type="submit" class="btn btn-primary @(isLoading ? "disabled" : "")">
+    <div class="input-group mb-2">
+        <input type="text" @bind="userInput" class="form-control"
+               placeholder="Type a message..."/>
+        <button type="button" class="btn btn-primary @(isLoading ? "disabled" : "")"
+                @onclick="SendMessage">
             @(isLoading ? "Sending..." : "Send")
         </button>
-    </EditForm>
+    </div>
+
+    <div class="disclaimer justify-content-center">
+        GoldAiAgent utilizes a small Language Model (LLM) based on llama.3.2 (3b).
+        This agent incorporates plugins for fetching data from NBP API, getting current date/dime and saving files.
+        <br/>
+        <strong>Key Limitations:</strong>
+        Lack of Step Implementation: The current implementation does not support complex step-by-step processes or function chaining.
+        Complex Prompts: Due to these limitations, GoldAiAgent may struggle with handling intricate or multi-command prompts.
+        It is recommended to use simple, single-command prompts for optimal performance.
+    </div>
 </div>
 
 @inject IMediator mediator;
 
 @code {
-    private ChatHistory history = new();
+    private ChatHistory history = new(GoldAiAgent.SystemPrompt);
     private bool isLoading;
 
-    [StringLength(50, MinimumLength = 3, ErrorMessage = "Input length must be between 3 and 500 characters.")]
-    private string userInput { get; set; } = string.Empty;
+    private string userInput { get; set; } = "Get gold prices for december 2024.";
 
-    public IEnumerable<ChatMessageContent> visibleMessages => history
-        .Where(m => m.Content.Length > 0)
-        .Where(m => m.Role == AuthorRole.Assistant || m.Role == AuthorRole.User);
+    private ChatMessageContent[] visibleMessages => history
+        .Where(m => m.Content?.Length > 0)
+        .Where(m => m.Role == AuthorRole.Assistant || m.Role == AuthorRole.User)
+        .ToArray();
 
-    protected override Task OnInitializedAsync()
-    {
-        history.AddSystemMessage(GoldAiAgent.SystemPrompt);
-        return Task.CompletedTask;
-    }
     private async Task SendMessage()
     {
         if (string.IsNullOrWhiteSpace(userInput))
-        {
             return;
-        }
 
         isLoading = true;
         history.AddUserMessage(userInput);
+        userInput = string.Empty;
 
         var request = new GoldAiAgent.Request(history);
-
         var response = await mediator.Send(request);
-        history = response.History;
 
-        userInput = "";
+        history = response.History;
         isLoading = false;
     }
-
-
 }
