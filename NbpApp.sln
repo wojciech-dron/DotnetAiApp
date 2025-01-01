@@ -7,6 +7,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution items", "solution items", "{4EA9EC45-526D-44E7-8D89-94D8D57B8410}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		readme.md = readme.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NbpApp.NbpApiClient", "src\NbpApp.NbpApiClient\NbpApp.NbpApiClient.csproj", "{FC7ACA23-DDDC-425C-8B33-B850D4DFFAE3}"
