@@ -18,6 +18,8 @@ public static class Setup
         services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
+        services.AddBlazorBootstrap();
+
         services.AddFormValidation(config =>
             config.AddFluentValidation(typeof(Setup).Assembly)
             );

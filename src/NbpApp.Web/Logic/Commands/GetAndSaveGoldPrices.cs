@@ -9,7 +9,7 @@ using NbpApp.NbpApiClient.Contracts;
 using NbpApp.NbpApiClient.Validators;
 using NbpApp.Utils.Utils;
 
-namespace NbpApp.Web.Logic;
+namespace NbpApp.Web.Logic.Commands;
 
 public class GetAndSaveGoldPrices
 {
@@ -73,7 +73,7 @@ public class GetAndSaveGoldPrices
             var entities = pricesDtos.Select(gp => new GoldPrice
             {
                 Date = gp.Date,
-                Price = gp.Price
+                Price = (double)gp.Price
             });
 
             await _context.BulkInsertOrUpdateAsync(entities, cancellationToken: cancellationToken);

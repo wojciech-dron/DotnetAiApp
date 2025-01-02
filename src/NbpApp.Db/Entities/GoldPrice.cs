@@ -6,7 +6,9 @@ namespace NbpApp.Db.Entities;
 public class GoldPrice
 {
     public DateOnly Date { get; set; }
-    public decimal Price { get; set; }
+
+    /// <remarks> SQLite does not support decimal ORDER BY expressions </remarks>
+    public double Price { get; set; }
 }
 
 internal class GoldPriceConfiguration : IEntityTypeConfiguration<GoldPrice>
@@ -20,7 +22,7 @@ internal class GoldPriceConfiguration : IEntityTypeConfiguration<GoldPrice>
             .HasColumnType("date");
 
         builder.Property(x => x.Price)
-            .HasColumnType("decimal(18, 2)")
+            .HasColumnType("double")
             .IsRequired();
     }
 }

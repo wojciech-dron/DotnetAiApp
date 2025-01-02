@@ -1,0 +1,80 @@
+﻿@page "/saved-prices"
+@rendermode InteractiveServer
+
+@using MediatR
+@using NbpApp.Web.Logic.Queries
+@using BlazorBootstrap
+@using NbpApp.Utils.Pagination
+@using NbpApp.Web.Dtos
+
+<h3>SavedPrices</h3>
+
+<Grid TItem="SavedPriceDto"
+      Class="table table-hover table-bordered table-striped"
+      AllowFiltering="true"
+      AllowPaging="true"
+      AllowSorting="true"
+      DataProvider="DataProvider"
+      PageSize="10"
+      PageSizeSelectorVisible="true"
+      PageSizeSelectorItems="@([5,10,20])"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="SavedPriceDto"
+                    HeaderText="Date"
+                    PropertyName="Date"
+                    SortString="Date"
+                    SortKeySelector="item => item.Date"
+                    >
+            @context.Date
+        </GridColumn>
+        <GridColumn TItem="SavedPriceDto"
+                    HeaderText="Price"
+                    PropertyName="Price"
+                    SortString="Price"
+                    SortKeySelector="item => item.Price"
+                    >
+            @context.Price
+        </GridColumn>
+    </GridColumns>
+
+</Grid>
+
+@inject IMediator mediator
+
+@code {
+    private async Task<GridDataProviderResult<SavedPriceDto>> DataProvider(
+        GridDataProviderRequest<SavedPriceDto> request)
+    {
+        var query = ConvertToQuery(request);
+
+        var result = await mediator.Send(query);
+
+        return new GridDataProviderResult<SavedPriceDto>
+        {
+            Data = result.Data,
+            TotalCount = result.TotalCount
+        };
+    }
+
+    private static GetSavedPrices.Query ConvertToQuery(GridDataProviderRequest<SavedPriceDto> request)
+    {
+        var sorting = request.Sorting
+            .Where(s => s.SortDirection is not SortDirection.None)
+            .Select(x => new Sorting(
+                x.SortString,
+                x.SortDirection == SortDirection.Ascending ? "asc" : "desc"
+            )).ToArray();
+
+        var query = new GetSavedPrices.Query
+        {
+            CurrentPage = request.PageNumber,
+            PageSize = request.PageSize,
+            SortingOrders = sorting
+        };
+
+        return query;
+    }
+
+}

@@ -4,7 +4,7 @@ using NbpApp.NbpApiClient;
 using NbpApp.NbpApiClient.Contracts;
 using NbpApp.Tests.Mocks;
 using NbpApp.Utils.Utils;
-using NbpApp.Web.Logic;
+using NbpApp.Web.Logic.Commands;
 using NSubstitute;
 
 namespace NbpApp.Tests.Logic
