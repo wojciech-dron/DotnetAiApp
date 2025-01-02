@@ -9,12 +9,33 @@
 
 <h3>SavedPrices</h3>
 
-<Grid TItem="SavedPriceDto"
+<div class="d-flex flex-wrap mb-3 justify-content-between">
+    <div class="me-3 flex-grow-1">
+        <label for="startDate" class="form-label">Start Date:</label>
+        <input type="date" id="startDate" @bind="query.StartDate" class="form-control" />
+    </div>
+    <div class="me-3 flex-grow-1">
+        <label for="endDate" class="form-label">End Date:</label>
+        <input type="date" id="endDate" @bind="query.EndDate" class="form-control" />
+    </div>
+    <div class="me-3 flex-grow-1">
+        <label for="minPrice" class="form-label">Min Price:</label>
+        <input type="number" id="minPrice" @bind="query.MinPrice" step="0.01" class="form-control" />
+    </div>
+    <div class="me-3 flex-grow-1">
+        <label for="maxPrice" class="form-label">Max Price:</label>
+        <input type="number" id="maxPrice" @bind="query.MaxPrice" step="0.01" class="form-control" />
+    </div>
+
+</div>
+<button class="btn btn-primary mb-3" @onclick="Filter">Filter</button>
+
+<Grid @ref="grid"
+      TItem="SavedPriceDto"
       Class="table table-hover table-bordered table-striped"
-      AllowFiltering="true"
       AllowPaging="true"
       AllowSorting="true"
-      DataProvider="DataProvider"
+      DataProvider="GetData"
       PageSize="10"
       PageSizeSelectorVisible="true"
       PageSizeSelectorItems="@([5,10,20])"
@@ -25,16 +46,14 @@
                     HeaderText="Date"
                     PropertyName="Date"
                     SortString="Date"
-                    SortKeySelector="item => item.Date"
-                    >
+                    SortKeySelector="item => item.Date">
             @context.Date
         </GridColumn>
         <GridColumn TItem="SavedPriceDto"
                     HeaderText="Price"
                     PropertyName="Price"
                     SortString="Price"
-                    SortKeySelector="item => item.Price"
-                    >
+                    SortKeySelector="item => item.Price">
             @context.Price
         </GridColumn>
     </GridColumns>
@@ -44,10 +63,20 @@
 @inject IMediator mediator
 
 @code {
-    private async Task<GridDataProviderResult<SavedPriceDto>> DataProvider(
+    Grid<SavedPriceDto> grid = default!;
+
+    private GetSavedPrices.Query query = new();
+
+    private async Task Filter()
+    {
+        await grid.ResetPageNumber();
+        await grid.RefreshDataAsync();
+    }
+
+    private async Task<GridDataProviderResult<SavedPriceDto>> GetData(
         GridDataProviderRequest<SavedPriceDto> request)
     {
-        var query = ConvertToQuery(request);
+        var query = MapPagination(request);
 
         var result = await mediator.Send(query);
 
@@ -58,7 +87,8 @@
         };
     }
 
-    private static GetSavedPrices.Query ConvertToQuery(GridDataProviderRequest<SavedPriceDto> request)
+    private GetSavedPrices.Query MapPagination(
+        GridDataProviderRequest<SavedPriceDto> request)
     {
         var sorting = request.Sorting
             .Where(s => s.SortDirection is not SortDirection.None)
@@ -67,14 +97,10 @@
                 x.SortDirection == SortDirection.Ascending ? "asc" : "desc"
             )).ToArray();
 
-        var query = new GetSavedPrices.Query
-        {
-            CurrentPage = request.PageNumber,
-            PageSize = request.PageSize,
-            SortingOrders = sorting
-        };
+        query.CurrentPage = request.PageNumber;
+        query.PageSize = request.PageSize;
+        query.SortingOrders = sorting;
 
         return query;
     }
-
 }

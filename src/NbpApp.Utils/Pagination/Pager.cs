@@ -13,9 +13,8 @@ public interface IPager : ISorter
 
 public class Pager : IPager
 {
-    public static readonly Pager Default = new();
-    private readonly int _currentPage = 1;
-    private readonly int _pageSize = 10;
+    private int _currentPage = 1;
+    private int _pageSize = 10;
 
     public Pager()
     { }
@@ -30,16 +29,16 @@ public class Pager : IPager
     public int CurrentPage
     {
         get => _currentPage;
-        init => _currentPage = value > 0 ? value : 1;
+        set => _currentPage = value > 0 ? value : 1;
     }
 
     public int PageSize
     {
         get => _pageSize;
-        init => _pageSize = value > 0 ? value : 10;
+        set => _pageSize = value > 0 ? value : 10;
     }
 
-    public Sorting[] SortingOrders { get; init; } = [];
+    public Sorting[] SortingOrders { get; set; } = [];
 }
 
 public sealed record Sorting(string Field, string Direction = "desc");

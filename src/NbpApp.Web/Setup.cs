@@ -22,7 +22,7 @@ public static class Setup
 
         services.AddFormValidation(config =>
             config.AddFluentValidation(typeof(Setup).Assembly)
-            );
+        );
 
         services.AddValidatorsFromAssembly(typeof(Setup).Assembly);
         services.AddMediatrForNbpApp();

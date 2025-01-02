@@ -61,8 +61,8 @@ namespace NbpApp.Tests.Logic
 
             // Assert
             _dbContext.GoldPrices.Should().BeEquivalentTo([
-                new GoldPrice { Date = goldPrices[0].Date, Price = goldPrices[0].Price },
-                new GoldPrice { Date = goldPrices[1].Date, Price = goldPrices[1].Price }
+                new GoldPrice { Date = goldPrices[0].Date, Price = 100 },
+                new GoldPrice { Date = goldPrices[1].Date, Price = 150 }
             ]);
 
             await _fileProvider.Received().WriteTextAsync(
@@ -76,8 +76,8 @@ namespace NbpApp.Tests.Logic
         {
             // Arrange
             _dbContext.GoldPrices.AddRange(
-                new GoldPrice { Date = new DateOnly(2023, 10, 1), Price = 100m },
-                new GoldPrice { Date = new DateOnly(2023, 10, 2), Price = 150m }
+                new GoldPrice { Date = new DateOnly(2023, 10, 1), Price = 100 },
+                new GoldPrice { Date = new DateOnly(2023, 10, 2), Price = 150 }
             );
             await _dbContext.SaveChangesAsync();
             _dbContext.ChangeTracker.Clear();
@@ -96,9 +96,9 @@ namespace NbpApp.Tests.Logic
 
             // Assert
             _dbContext.GoldPrices.Should().BeEquivalentTo([
-                new GoldPrice { Date = new DateOnly(2023, 10, 1), Price = 100m },
-                new GoldPrice { Date = new DateOnly(2023, 10, 2), Price = 200m },
-                new GoldPrice { Date = new DateOnly(2023, 10, 3), Price = 250m },
+                new GoldPrice { Date = new DateOnly(2023, 10, 1), Price = 100 },
+                new GoldPrice { Date = new DateOnly(2023, 10, 2), Price = 200 },
+                new GoldPrice { Date = new DateOnly(2023, 10, 3), Price = 250 },
             ]);
         }
 

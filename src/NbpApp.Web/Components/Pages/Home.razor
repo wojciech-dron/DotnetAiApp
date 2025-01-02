@@ -45,15 +45,15 @@
 @inject ITimeProvider TimeProvider
 
 @code {
-    private GetAndSaveGoldPrices.Command request;
+    private GetAndSaveGoldPrices.Command request = new();
     private GoldPriceResult? result;
     private bool isLoading;
 
-    protected override void OnInitialized() => request = new()
+    protected override void OnInitialized()
     {
-        StartDate = TimeProvider.CurrentDate.AddDays(-30),
-        EndDate = TimeProvider.CurrentDate
-    };
+        request.StartDate = TimeProvider.CurrentDate.AddDays(-30);
+        request.EndDate = TimeProvider.CurrentDate;
+    }
 
     private async Task FetchGoldPrices()
     {
