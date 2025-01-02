@@ -23,7 +23,6 @@
 
     <ItemGroup>
       <Folder Include="Logic\" />
-      <Folder Include="Output\" />
     </ItemGroup>
 
     <!-- Disable experimental warnings-->

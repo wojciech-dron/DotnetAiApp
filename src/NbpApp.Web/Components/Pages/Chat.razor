@@ -27,9 +27,8 @@
                     <pre>@message.Content</pre>
                 </div>
             }
-
         }
-        @if (visibleMessages.Length == 0)
+        @if (result is null)
         {
             <div class="message placeholder-message">
                 <strong>Examples:</strong>
@@ -42,6 +41,13 @@
 
                 <p>Try to use single-command prompts.</p>
 
+            </div>
+        }
+        @if (result?.IsSuccess == false)
+        {
+            <div class="message ai-message text-danger">
+                <strong>@("Gold Agent error:")</strong>
+                <pre>@result.ErrorMessage</pre>
             </div>
         }
     </div>
@@ -67,10 +73,12 @@
     </div>
 </div>
 
+
 @inject IMediator mediator;
 
 @code {
     private ChatHistory history = new(GoldAiAgent.SystemPrompt);
+    private GoldAiAgent.Result? result;
     private bool isLoading;
 
     private string userInput { get; set; } = "Get gold prices for december 2024.";
@@ -90,9 +98,9 @@
         userInput = string.Empty;
 
         var request = new GoldAiAgent.Request(history);
-        var response = await mediator.Send(request);
+        result = await mediator.Send(request);
 
-        history = response.History;
+        history = result.History;
         isLoading = false;
     }
 }

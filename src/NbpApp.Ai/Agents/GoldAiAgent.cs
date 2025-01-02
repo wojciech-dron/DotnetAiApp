@@ -48,13 +48,20 @@ public class GoldAiAgent
         {
             var history = request.History;
 
-            var result = await _chatService.GetChatMessageContentAsync(
-                history,
-                executionSettings: _chatSettings,
-                kernel: _kernel,
-                cancellationToken: cancellationToken);
+            try
+            {
+                var result = await _chatService.GetChatMessageContentAsync(
+                    history,
+                    executionSettings: _chatSettings,
+                    kernel: _kernel,
+                    cancellationToken: cancellationToken);
 
-            history.AddMessage(result.Role, result.Content ?? string.Empty);
+                history.AddMessage(result.Role, result.Content ?? string.Empty);
+            }
+            catch (HttpRequestException)
+            {
+                return new Result(history) { ErrorMessage = "Unable to connect to the Ollama API." };
+            }
 
             return history;
         }
