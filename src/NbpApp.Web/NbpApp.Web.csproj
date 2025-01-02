@@ -24,8 +24,12 @@
       <Folder Include="Output\" />
     </ItemGroup>
 
-<!--        Disable experimental warnings-->
+    <!-- Disable experimental warnings-->
     <PropertyGroup>
         <NoWarn>$(NoWarn);SKEXP0001,SKEXP0010;SKEXP0070</NoWarn>
     </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="NbpApp.Tests" />
+    </ItemGroup>
 </Project>

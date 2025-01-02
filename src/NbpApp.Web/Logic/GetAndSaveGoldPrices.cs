@@ -1,8 +1,9 @@
 ﻿using System.Text.Json;
+using EFCore.BulkExtensions;
 using FluentValidation;
 using MediatR;
+using NbpApp.Db;
 using NbpApp.Db.Entities;
-using NbpApp.Db.Repos;
 using NbpApp.NbpApiClient;
 using NbpApp.NbpApiClient.Contracts;
 using NbpApp.NbpApiClient.Validators;
@@ -29,19 +30,19 @@ public class GetAndSaveGoldPrices
     internal class Handler : IRequestHandler<Command, GoldPriceResult>
     {
         private readonly INbpApiClient _nbpApiClient;
-        private readonly IGoldPriceRepository _goldRepo;
         private readonly IFileProvider _fileProvider;
         private readonly ITimeProvider _timeProvider;
+        private readonly NbpAppContext _context;
 
         public Handler(INbpApiClient nbpApiClient,
-            IGoldPriceRepository goldRepo,
             IFileProvider fileProvider,
-            ITimeProvider timeProvider)
+            ITimeProvider timeProvider,
+            NbpAppContext context)
         {
             _nbpApiClient = nbpApiClient;
-            _goldRepo = goldRepo;
             _fileProvider = fileProvider;
             _timeProvider = timeProvider;
+            _context = context;
         }
 
         public async Task<GoldPriceResult> Handle(Command request, CancellationToken cancellationToken)
@@ -75,7 +76,7 @@ public class GetAndSaveGoldPrices
                 Price = gp.Price
             });
 
-            await _goldRepo.AddOrUpdatePrices(entities, cancellationToken);
+            await _context.BulkInsertOrUpdateAsync(entities, cancellationToken: cancellationToken);
         }
 
         private async Task SavePricesToJsonFile(NpbPriceDto[] goldPrices, CancellationToken cancellationToken)

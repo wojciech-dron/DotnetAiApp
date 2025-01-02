@@ -3,7 +3,7 @@ using NbpApp.Db.Entities;
 
 namespace NbpApp.Db;
 
-internal class NbpAppContext : DbContext
+public class NbpAppContext : DbContext
 {
     public DbSet<GoldPrice> GoldPrices { get; set; }
 

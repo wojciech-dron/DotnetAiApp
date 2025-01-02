@@ -36,8 +36,11 @@
                 <ul>
                     <li>What is the current date?</li>
                     <li>Get gold prices for december 2024.</li>
+                    <li>Is the trend for a given period increasing or decreasing?</li>
                     <li>Write content directly to file and return output path.</li>
                 </ul>
+
+                <p>Try to use single-command prompts.</p>
 
             </div>
         }
@@ -57,7 +60,8 @@
         This agent incorporates plugins for fetching data from NBP API, getting current date/dime and saving files.
         <br/>
         <strong>Key Limitations:</strong>
-        Lack of Step Implementation: The current implementation does not support complex step-by-step processes or function chaining.
+        The current implementation does not support complex step planning or function chaining.
+        This solution uses prerelease versions of Semantic Kernel libraries, so it can be buggy.
         Complex Prompts: Due to these limitations, GoldAiAgent may struggle with handling intricate or multi-command prompts.
         It is recommended to use simple, single-command prompts for optimal performance.
     </div>

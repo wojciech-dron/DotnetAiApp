@@ -30,9 +30,13 @@ public class NbpApiPlugin
         if (!validationResult.IsValid)
             return $"Invalid request: {validationResult}";
 
-        var prices = await _nbpApiClient.GetGoldPricesAsync(request);
+        var goldPrices = await _nbpApiClient.GetGoldPricesAsync(request);
 
-        return JsonSerializer.Serialize(prices);
+        return JsonSerializer.Serialize(goldPrices.Select(p => new
+        {
+            date = p.Date,
+            price = p.Price
+        }));
     }
 }
 

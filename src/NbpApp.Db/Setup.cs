@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NbpApp.Db.Repos;
 
 namespace NbpApp.Db;
 
@@ -9,8 +8,6 @@ public static class Setup
 {
     public static IServiceCollection AddNbpAppDb(this IServiceCollection services)
     {
-        services.AddScoped<IGoldPriceRepository, GoldPriceRepository>();
-
         services.AddDbContext<NbpAppContext>((serviceProvider, options) =>
         {
             var connectionString = serviceProvider
