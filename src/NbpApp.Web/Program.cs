@@ -1,6 +1,3 @@
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.Ollama;
 using NbpApp.Db;
 using NbpApp.Web;
 using NbpApp.Web.Components;
@@ -8,11 +5,7 @@ using NbpApp.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services
-    .AddNbpAppWebServices(builder.Configuration)
-    .AddRazorComponents()
-    .AddInteractiveServerComponents();
-
+builder.Services.AddAppServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -24,7 +17,6 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
 app.UseAntiforgery();
 
 app.MapStaticAssets();
@@ -33,4 +25,7 @@ app.MapRazorComponents<App>()
 
 app.Services.PrepareDb();
 
+app.SetAppCulture();
+
 app.Run();
+

@@ -1,6 +1,5 @@
 ﻿namespace NbpApp.Utils.Utils;
 
-
 public interface ITimeProvider
 {
     DateTime CurrentTime { get; }

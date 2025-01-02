@@ -6,7 +6,7 @@ namespace NbpApp.Web.Logic.Behaviours;
 
 public sealed class ValidationBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IRequest
+    where TRequest : IBaseRequest
     where TResponse : AppResult, new()
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
@@ -38,7 +38,7 @@ public sealed class ValidationBehavior<TRequest, TResponse>
         {
             return new TResponse
             {
-                ErrorMessage = "Validation failed.",
+                ErrorMessage = "Invalid request.",
                 ValidationErrors = errors
             };
         }

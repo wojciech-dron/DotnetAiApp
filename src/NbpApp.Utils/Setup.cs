@@ -8,8 +8,8 @@ public static class Setup
 {
     public static IServiceCollection AddUtils(this IServiceCollection services)
     {
+        services.AddTransient<ITimeProvider, TimeProvider>();
         services.AddScoped<IFileProvider, StaticFileProvider>();
-        services.AddScoped<ITimeProvider, TimeProvider>();
 
         return services;
     }

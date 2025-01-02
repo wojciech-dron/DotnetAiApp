@@ -12,7 +12,7 @@ public class GoldAiAgent
 {
     public const string SystemPrompt =
         $"""
-        You are a helpful assistant that helps retrieving and managing data about gold prices in polish zloty.
+        You are a helpful assistant that helps getting and managing data about gold prices in polish zloty.
         Show data in simple table.
         Do not write any code or scripts, if neccessary call functions from plugins:
         {nameof(NbpApiPlugin)},{nameof(FileProviderPlugin)} and {nameof(TimePlugin)}.

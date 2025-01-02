@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
-using MediatR;
 using MediatR.Pipeline;
+using Microsoft.AspNetCore.Localization;
+using Morris.Blazor.Validation;
 using NbpApp.Ai;
 using NbpApp.Db;
 using NbpApp.NbpApiClient;
@@ -11,9 +12,16 @@ namespace NbpApp.Web;
 
 public static class Setup
 {
-    public static IServiceCollection AddNbpAppWebServices(this IServiceCollection services,
+    public static IServiceCollection AddAppServices(this IServiceCollection services,
         IConfiguration configuration)
     {
+        services.AddRazorComponents()
+            .AddInteractiveServerComponents();
+
+        services.AddFormValidation(config =>
+            config.AddFluentValidation(typeof(Setup).Assembly)
+            );
+
         services.AddValidatorsFromAssembly(typeof(Setup).Assembly);
         services.AddMediatrForNbpApp();
 
@@ -23,6 +31,19 @@ public static class Setup
         services.AddAiModule(configuration);
 
         return services;
+    }
+
+    public static void SetAppCulture(this WebApplication webApplication)
+    {
+        var cultureOptions = new RequestLocalizationOptions()
+            .AddSupportedCultures("en-EN")
+            .AddSupportedUICultures("en-EN");
+
+        var requestCulture = new RequestCulture("en-EN");
+        requestCulture.Culture.DateTimeFormat.ShortDatePattern = "dd.MM.yyyy";
+        cultureOptions.DefaultRequestCulture = requestCulture;
+
+        webApplication.UseRequestLocalization(cultureOptions);
     }
 
     private static IServiceCollection AddMediatrForNbpApp(this IServiceCollection services)
@@ -37,6 +58,8 @@ public static class Setup
 
         return services;
     }
+
+
 
 }
 

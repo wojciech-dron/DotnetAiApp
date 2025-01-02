@@ -5,58 +5,48 @@ using NbpApp.Db.Entities;
 using NbpApp.Db.Repos;
 using NbpApp.NbpApiClient;
 using NbpApp.NbpApiClient.Contracts;
+using NbpApp.NbpApiClient.Validators;
 using NbpApp.Utils.Utils;
 
 namespace NbpApp.Web.Logic;
 
 public class GetAndSaveGoldPrices
 {
-    public record Command(DateOnly StartDate, DateOnly EndDate) : IRequest<GoldPriceResult>;
+    public class Command : IRequest<GoldPriceResult>, IGetGoldPricesRequest
+    {
+        public DateOnly? StartDate { get; set; }
+        public DateOnly? EndDate { get; set; }
+    }
 
     public class Validator : AbstractValidator<Command>
     {
-        private const int MaxSpanDays = 180;
-        private static readonly DateOnly MinDate = new(2013, 01, 01);
-        public Validator(ITimeProvider timeProvider)
+        public Validator(GoldPricesRequestValidator goldPricesRequestValidator)
         {
-            RuleFor(c => c.EndDate)
-                .Cascade(CascadeMode.Stop)
-                .Must(date => date <= timeProvider.CurrentDate)
-                .WithMessage("End date must be less or equal now");
-
-            RuleFor(c => c.StartDate)
-                .Cascade(CascadeMode.Stop)
-                .NotEmpty()
-                .LessThan(MinDate)
-                .WithMessage($"Start date must be greater than {MinDate:yyyy-MM-dd}")
-                .Must((command, startDate) => startDate <= command.EndDate)
-                .WithMessage("Start date must be less than end date")
-                .Must((command, startDate) => startDate.DayNumber - command.EndDate.DayNumber <= MaxSpanDays)
-                .WithMessage($"Span must be less than a {MaxSpanDays} days");
+            Include(goldPricesRequestValidator);
         }
     }
 
-    class Handler : IRequestHandler<Command, GoldPriceResult>
+    internal class Handler : IRequestHandler<Command, GoldPriceResult>
     {
         private readonly INbpApiClient _nbpApiClient;
         private readonly IGoldPriceRepository _goldRepo;
         private readonly IFileProvider _fileProvider;
+        private readonly ITimeProvider _timeProvider;
 
         public Handler(INbpApiClient nbpApiClient,
             IGoldPriceRepository goldRepo,
-            IFileProvider fileProvider)
+            IFileProvider fileProvider,
+            ITimeProvider timeProvider)
         {
             _nbpApiClient = nbpApiClient;
             _goldRepo = goldRepo;
             _fileProvider = fileProvider;
+            _timeProvider = timeProvider;
         }
 
         public async Task<GoldPriceResult> Handle(Command request, CancellationToken cancellationToken)
         {
-            var goldPrices = await _nbpApiClient.GetGoldPricesAsync(
-                request.StartDate,
-                request.EndDate,
-                cancellationToken);
+            var goldPrices = await _nbpApiClient.GetGoldPricesAsync(request, cancellationToken);
 
             if (!goldPrices.Any())
             {
@@ -90,7 +80,7 @@ public class GetAndSaveGoldPrices
 
         private async Task SavePricesToJsonFile(NpbPriceDto[] goldPrices, CancellationToken cancellationToken)
         {
-            var fileName = $"gold_prices_request_{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss}.json";
+            var fileName = $"gold_prices_request_{_timeProvider.CurrentTime:yyyy-MM-dd_HH-mm-ss}.json";
             var json = JsonSerializer.Serialize(goldPrices);
 
             await _fileProvider.WriteTextAsync(fileName, json, cancellationToken);

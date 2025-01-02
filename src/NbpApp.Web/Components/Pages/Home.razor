@@ -2,18 +2,25 @@
 @rendermode InteractiveServer
 
 <PageTitle>Nbp gold prices</PageTitle>
+<EditForm Model=@request OnSubmit=FetchGoldPrices>
+    <Validate />
 
-<div class="mb-3">
-    <div class="form-floating mb-3">
-        <input type="date" class="form-control" @bind="startDate">
-        <label>Start date</label>
+    <div class="mb-3">
+        <div class="form-floating mb-3">
+            <InputDate class="form-control" @bind-Value="request.StartDate" />
+            <label>Start date</label>
+            <ValidationMessage For=@(() => request.StartDate) />
+        </div>
+
+        <div class="form-floating mb-3">
+            <InputDate class="form-control" @bind-Value="request.EndDate" />
+            <label>End date</label>
+            <ValidationMessage For=@(() => request.EndDate) />
+        </div>
+
+        <button class="btn btn-primary" @onclick="FetchGoldPrices">Fetch gold prices</button>
     </div>
-    <div class="form-floating mb-3">
-        <input type="date" class="form-control" @bind="endDate">
-        <label>End date</label>
-    </div>
-    <button class="btn btn-primary" @onclick="FetchGoldPrices">Fetch gold prices</button>
-</div>
+</EditForm>
 
 
 @if (result?.IsSuccess == true)
@@ -26,27 +33,28 @@
     </div>
 }
 
-@if (result?.IsSuccess == false)
-{
-    <div class="mb-3">
-        <h3>Error occurred when fetching data</h3>
-        <p>@result.ErrorMessage</p>
-    </div>
-}
+<ErrorMessage Result="@result" />
 
 
 @inject IMediator Mediator
+@inject ITimeProvider TimeProvider
 @using MediatR
+@using Morris.Blazor.Validation
+@using NbpApp.Utils.Utils
 @using NbpApp.Web.Logic
 
 @code {
     private GoldPriceResult? result;
+    private GetAndSaveGoldPrices.Command request;
 
-    private DateOnly startDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-30));
-    private DateOnly endDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
+    protected override void OnInitialized() => request = new()
+    {
+        StartDate = TimeProvider.CurrentDate.AddDays(-30),
+        EndDate = TimeProvider.CurrentDate
+    };
+
     private async Task FetchGoldPrices()
     {
-        var command = new GetAndSaveGoldPrices.Command(startDate, endDate);
-        result = await Mediator.Send(command);
+        result = await Mediator.Send(request);
     }
 }

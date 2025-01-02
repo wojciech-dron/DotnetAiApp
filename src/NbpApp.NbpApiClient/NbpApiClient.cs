@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Json;
-using System.Text;
 using NbpApp.NbpApiClient.Contracts;
 
 namespace NbpApp.NbpApiClient;
@@ -7,8 +6,7 @@ namespace NbpApp.NbpApiClient;
 public interface INbpApiClient
 {
     public Task<NpbPriceDto[]> GetGoldPricesAsync(
-        DateOnly startDate,
-        DateOnly endDate,
+        IGetGoldPricesRequest request,
         CancellationToken cancellationToken = default);
 }
 
@@ -21,10 +19,10 @@ internal class NbpApiClient : INbpApiClient
         _client = client;
     }
 
-    public async Task<NpbPriceDto[]> GetGoldPricesAsync(DateOnly startDate, DateOnly endDate,
+    public async Task<NpbPriceDto[]> GetGoldPricesAsync(IGetGoldPricesRequest request,
         CancellationToken cancellationToken = default)
     {
-        var requestUrl = $"cenyzlota/{startDate:yyyy-MM-dd}/{endDate:yyyy-MM-dd}";
+        var requestUrl = $"cenyzlota/{request.StartDate:yyyy-MM-dd}/{request.EndDate:yyyy-MM-dd}";
 
         var response = await _client.GetAsync(requestUrl, cancellationToken);
 
@@ -38,4 +36,11 @@ internal class NbpApiClient : INbpApiClient
 
         return content;
     }
+}
+
+
+public interface IGetGoldPricesRequest
+{
+    public DateOnly? StartDate { get; }
+    public DateOnly? EndDate { get; }
 }
