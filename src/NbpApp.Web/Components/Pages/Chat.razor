@@ -53,7 +53,9 @@
     </div>
 
     <div class="input-group mb-2">
-        <input type="text" @bind="userInput" class="form-control"
+        <input type="text"
+               @bind="userInput" class="form-control"
+               @onkeydown="@(async (KeyboardEventArgs e) => await Enter(e))"
                placeholder="Type a message..."/>
         <button type="button" class="btn btn-primary @(isLoading ? "disabled" : "")"
                 @onclick="SendMessage">
@@ -89,6 +91,13 @@
         .Where(m => m.Role == AuthorRole.Assistant || m.Role == AuthorRole.User)
         .ToArray();
 
+    public async Task Enter(KeyboardEventArgs e)
+    {
+        if (e.Code is "Enter" or "NumpadEnter" && !isLoading)
+        {
+            await SendMessage();
+        }
+    }
     private async Task SendMessage()
     {
         if (string.IsNullOrWhiteSpace(userInput))
