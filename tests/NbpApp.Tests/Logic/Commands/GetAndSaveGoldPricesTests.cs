@@ -7,7 +7,7 @@ using NbpApp.Utils.Utils;
 using NbpApp.Web.Logic.Commands;
 using NSubstitute;
 
-namespace NbpApp.Tests.Logic
+namespace NbpApp.Tests.Logic.Commands
 {
     public class GetAndSaveGoldPricesTests
     {

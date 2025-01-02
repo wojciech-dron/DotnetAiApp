@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using NbpApp.Db;
 using NbpApp.Utils.Extensions;
 using NbpApp.Utils.Pagination;
@@ -28,6 +29,7 @@ public class GetSavedPrices
         public async Task<PagedList<SavedPriceDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var result = await _context.GoldPrices
+                .AsNoTracking()
                 .WhereIf(request.StartDate.HasValue, gp => gp.Date >= request.StartDate)
                 .WhereIf(request.EndDate.HasValue, gp => gp.Date <= request.EndDate)
                 .WhereIf(request.MinPrice.HasValue, gp => gp.Price >= request.MinPrice)
