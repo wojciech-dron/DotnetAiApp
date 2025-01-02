@@ -28,7 +28,7 @@
                 </div>
             }
         }
-        @if (result is null)
+        @if (visibleMessages.Length == 0 && !isLoading)
         {
             <div class="message placeholder-message">
                 <strong>Examples:</strong>
@@ -45,7 +45,7 @@
         }
         @if (result?.IsSuccess == false)
         {
-            <div class="message ai-message text-danger">
+            <div class="message ai-message">
                 <strong>@("Gold Agent error:")</strong>
                 <pre>@result.ErrorMessage</pre>
             </div>
@@ -84,6 +84,7 @@
     private string userInput { get; set; } = "Get gold prices for december 2024.";
 
     private ChatMessageContent[] visibleMessages => history
+        .Where(m => result?.IsSuccess == true)
         .Where(m => m.Content?.Length > 0)
         .Where(m => m.Role == AuthorRole.Assistant || m.Role == AuthorRole.User)
         .ToArray();

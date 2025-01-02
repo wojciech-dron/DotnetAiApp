@@ -30,3 +30,14 @@ Run llama3.2 on ollama:
   docker exec -it ollama ollama run llama3.2
 ```
 
+If model responses are very small consider using smaller version of llama3.2:1b.
+
+```bash
+  docker exec -it ollama ollama run llama3.2:1b
+```
+
+It requires change in appsettings.json file:
+
+```
+"AiSettings.ModelId": "llama3.2:1b"
+```
