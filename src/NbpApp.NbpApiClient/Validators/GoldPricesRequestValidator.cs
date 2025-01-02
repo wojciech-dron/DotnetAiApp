@@ -23,7 +23,7 @@ public sealed class GoldPricesRequestValidator : AbstractValidator<IGetGoldPrice
             .LessThanOrEqualTo(timeProvider.CurrentDate)
             .GreaterThanOrEqualTo(c => c.StartDate)
             .Must((command, endDate) => endDate!.Value.DayNumber - command.StartDate!.Value.DayNumber <= MaxSpanDays)
-            .When((command, endDate) => command.StartDate is not null)
+            .When(command => command.StartDate is not null)
             .WithMessage($"Span must be less than a {MaxSpanDays} days");
     }
 }
