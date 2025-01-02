@@ -81,7 +81,12 @@ public class GetAndSaveGoldPrices
         private async Task SavePricesToJsonFile(NpbPriceDto[] goldPrices, CancellationToken cancellationToken)
         {
             var fileName = $"gold_prices_request_{_timeProvider.CurrentTime:yyyy-MM-dd_HH-mm-ss}.json";
-            var json = JsonSerializer.Serialize(goldPrices);
+
+            var json = JsonSerializer.Serialize(goldPrices.Select(p => new
+            {
+                date = p.Date,
+                price = p.Price
+            }));
 
             await _fileProvider.WriteTextAsync(fileName, json, cancellationToken);
         }

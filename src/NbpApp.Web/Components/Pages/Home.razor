@@ -1,8 +1,13 @@
 ﻿@page "/"
 @rendermode InteractiveServer
 
+@using MediatR
+@using Morris.Blazor.Validation
+@using NbpApp.Utils.Utils
+@using NbpApp.Web.Logic
+
 <PageTitle>Nbp gold prices</PageTitle>
-<EditForm Model=@request OnSubmit=FetchGoldPrices>
+<EditForm Model=@request OnValidSubmit=FetchGoldPrices >
     <Validate />
 
     <div class="mb-3">
@@ -18,10 +23,9 @@
             <ValidationMessage For=@(() => request.EndDate) />
         </div>
 
-        <button class="btn btn-primary" @onclick="FetchGoldPrices">Fetch gold prices</button>
+        <button class="btn btn-primary @(isLoading ? "disabled" : "")" type="submit">Fetch gold prices</button>
     </div>
 </EditForm>
-
 
 @if (result?.IsSuccess == true)
 {
@@ -34,18 +38,16 @@
 }
 
 <ErrorMessage Result="@result" />
+<Loader IsVisible="@isLoading" />
 
 
 @inject IMediator Mediator
 @inject ITimeProvider TimeProvider
-@using MediatR
-@using Morris.Blazor.Validation
-@using NbpApp.Utils.Utils
-@using NbpApp.Web.Logic
 
 @code {
-    private GoldPriceResult? result;
     private GetAndSaveGoldPrices.Command request;
+    private GoldPriceResult? result;
+    private bool isLoading;
 
     protected override void OnInitialized() => request = new()
     {
@@ -55,6 +57,10 @@
 
     private async Task FetchGoldPrices()
     {
+        isLoading = true;
+        result = null;
+
         result = await Mediator.Send(request);
+        isLoading = false;
     }
 }
