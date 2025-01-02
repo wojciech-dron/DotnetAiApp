@@ -267,3 +267,4 @@ __pycache__/
 /src/NbpApp.Web/nbp.db-shm
 /src/NbpApp.Web/nbp.db-wal
 /src/NbpApp.Web/Output/
+/src/NbpApp.Web/Logs/
