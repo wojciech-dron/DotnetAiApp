@@ -1,0 +1,39 @@
+{
+  "Serilog": {
+    "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File", "Serilog.Expressions" ],
+    "MinimumLevel": {
+      "Override": {
+        "Microsoft.AspNetCore": "Warning",
+        "System.Net.Http.HttpClient": "Warning",
+        "NbpApp.Ai.DelegatingHandlers.OllamaChat": "Verbose"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Logger",
+        "Args": {
+          "configureLogger": {
+            "Filter": [
+              {
+                "Name": "ByIncludingOnly",
+                "Args": {
+                  "expression": "StartsWith(SourceContext, 'NbpApp.Ai.DelegatingHandlers.OllamaChat')"
+                }
+              }
+            ],
+            "WriteTo": [
+              {
+                "Name": "File",
+                "Args": {
+                  "rollingInterval": "Day",
+                  "path": "Logs/ollama/chat.log",
+                  "outputTemplate": "{Message:lj}{NewLine}{NewLine}{NewLine}"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
