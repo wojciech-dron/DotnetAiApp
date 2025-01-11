@@ -1,15 +1,16 @@
-# NBP APP
+# Dotnet AI App
 
-This is demo for fetching gold prices from [NBP API](https://api.nbp.pl/en.html)
+This is demo for basic ai features.
+
+Demo provides fetching gold prices from [NBP API](https://api.nbp.pl/en.html)
 with db and file saving.
 
-Demo provides basic ai features.
 
 ## Getting started
 
 To run application, execute the following command in the project root folder:
 ```bash
-    dotnet run -p .\src\NbpApp.Web\
+    dotnet run -p .\src\DotnetAiApp.Web\
 ```
 
 ## Pre-requisites

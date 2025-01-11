@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MediatR" Version="12.4.1" />
+      <PackageReference Include="Microsoft.SemanticKernel" Version="1.32.0" />
+      <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.32.0-alpha" />
+      <PackageReference Include="Microsoft.SemanticKernel.Planners.Handlebars" Version="1.32.0-preview" />
+      <PackageReference Include="SemanticKernel.Assistants" Version="1.31.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DotnetAiApp.Db\DotnetAiApp.Db.csproj" />
+      <ProjectReference Include="..\DotnetAiApp.HttpClients\DotnetAiApp.HttpClients.csproj" />
+      <ProjectReference Include="..\DotnetAiApp.Core\DotnetAiApp.Core.csproj" />
+    </ItemGroup>
+
+    <!--        Disable experimental warnings-->
+    <PropertyGroup>
+        <NoWarn>$(NoWarn);SKEXP0001,SKEXP0010;SKEXP0070;SKEXP0110</NoWarn>
+    </PropertyGroup>
+</Project>

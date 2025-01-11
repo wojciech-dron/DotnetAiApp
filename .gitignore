@@ -261,10 +261,10 @@ __pycache__/
 *.pyc
 
 
-# NbpApp
-/src/NbpApp.Web/appsettings.Development.json
-/src/NbpApp.Web/nbp.db
-/src/NbpApp.Web/nbp.db-shm
-/src/NbpApp.Web/nbp.db-wal
-/src/NbpApp.Web/Output/
-/src/NbpApp.Web/Logs/
+# DotnetAiApp
+/src/DotnetAiApp.Web/appsettings.Development.json
+/src/DotnetAiApp.Web/nbp.db
+/src/DotnetAiApp.Web/nbp.db-shm
+/src/DotnetAiApp.Web/nbp.db-wal
+/src/DotnetAiApp.Web/Output/
+/src/DotnetAiApp.Web/Logs/

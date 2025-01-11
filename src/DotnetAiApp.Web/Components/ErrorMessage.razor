@@ -1,0 +1,22 @@
+﻿@using DotnetAiApp.Core.Utils
+@* ErrorDisplayComponent.razor *@
+@if (Result?.IsSuccess == false)
+{
+    <div class="mb-3">
+        <h3>Error occurred when fetching data</h3>
+        <p>@Result.ErrorMessage</p>
+
+        @if (Result.ValidationErrors.Any())
+        {
+            <h4>Validation errors:</h4>
+            @foreach (var error in Result.ValidationErrors)
+            {
+                <p>@error.PropertyName: @error.ErrorMessage</p>
+            }
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public AppResult? Result { get; set; }
+}

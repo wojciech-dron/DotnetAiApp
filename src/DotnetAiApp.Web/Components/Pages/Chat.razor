@@ -1,0 +1,116 @@
+﻿@page "/chat"
+@rendermode InteractiveServer
+
+@using MediatR
+@using Microsoft.SemanticKernel
+@using Microsoft.SemanticKernel.ChatCompletion
+@using DotnetAiApp.Agents.Agents
+
+<h3 class="mb-3" xmlns="http://www.w3.org/1999/html">AI Chat</h3>
+
+<div class="chat-container">
+    <div class="chat-messages p-3 border rounded mb-3" >
+        @foreach (var message in visibleMessages)
+        {
+            @if (message.Role == AuthorRole.User)
+            {
+                <div class="message user-message">
+                    <strong>@("You:")</strong>
+                    <pre>@message.Content</pre>
+                </div>
+            }
+
+            @if (message.Role == AuthorRole.Assistant && !string.IsNullOrWhiteSpace(message.Content))
+            {
+                <div class="message ai-message">
+                    <strong>@("Gold agent:")</strong>
+                    <pre>@message.Content</pre>
+                </div>
+            }
+        }
+        @if (visibleMessages.Length == 0 && !isLoading)
+        {
+            <div class="message placeholder-message">
+                <strong>Examples:</strong>
+                <ul>
+                    <li>What is the current date?</li>
+                    <li>Get gold prices for december 2024.</li>
+                    <li>Is the trend for a given period increasing or decreasing?</li>
+                    <li>Write content directly to file and return output path.</li>
+                </ul>
+
+                <p>Try to use single-command prompts.</p>
+
+            </div>
+        }
+        @if (result?.IsSuccess == false)
+        {
+            <div class="message ai-message">
+                <strong>@("Gold Agent error:")</strong>
+                <pre>@result.ErrorMessage</pre>
+            </div>
+        }
+    </div>
+
+    <div class="input-group mb-2">
+        <input type="text"
+               @bind="userInput" class="form-control"
+               @onkeydown="@(async (KeyboardEventArgs e) => await Enter(e))"
+               placeholder="Type a message..."/>
+        <button type="button" class="btn btn-primary @(isLoading ? "disabled" : "")"
+                @onclick="SendMessage">
+            @(isLoading ? "Sending..." : "Send")
+        </button>
+    </div>
+
+    <div class="disclaimer justify-content-center">
+        GoldAiAgent utilizes a small Language Model (LLM) based on llama.3.2 (3b).
+        This agent incorporates plugins for fetching data from NBP API, getting current date/dime and saving files.
+        <br/>
+        <strong>Key Limitations:</strong>
+        The current implementation does not support complex step planning or function chaining.
+        This solution uses prerelease versions of Semantic Kernel libraries, so it can be buggy.
+        Complex Prompts: Due to these limitations, GoldAiAgent may struggle with handling intricate or multi-command prompts.
+        It is recommended to use simple, single-command prompts for optimal performance.
+    </div>
+</div>
+
+
+@inject IMediator mediator;
+
+@code {
+    private ChatHistory history = new(GoldAiAgent.SystemPrompt);
+    private GoldAiAgent.Result? result;
+    private bool isLoading;
+
+    private string userInput { get; set; } = "Get gold prices for december 2024.";
+
+    private ChatMessageContent[] visibleMessages => history
+        .Where(m => result?.IsSuccess == true)
+        .Where(m => m.Content?.Length > 0)
+        .Where(m => m.Role == AuthorRole.Assistant || m.Role == AuthorRole.User)
+        .ToArray();
+
+    public async Task Enter(KeyboardEventArgs e)
+    {
+        if (e.Code is "Enter" or "NumpadEnter" && !isLoading)
+        {
+            await SendMessage();
+        }
+    }
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(userInput))
+            return;
+
+        isLoading = true;
+        history.AddUserMessage(userInput);
+        userInput = string.Empty;
+
+        var request = new GoldAiAgent.Request(history);
+        result = await mediator.Send(request);
+
+        history = result.History;
+        isLoading = false;
+    }
+}
