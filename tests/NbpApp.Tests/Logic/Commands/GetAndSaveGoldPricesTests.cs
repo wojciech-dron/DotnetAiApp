@@ -7,120 +7,119 @@ using NbpApp.Utils.Utils;
 using NbpApp.Web.Logic.Commands;
 using NSubstitute;
 
-namespace NbpApp.Tests.Logic.Commands
+namespace NbpApp.Tests.Logic.Commands;
+
+public class GetAndSaveGoldPricesTests
 {
-    public class GetAndSaveGoldPricesTests
+    private readonly INbpApiClient _nbpApiClient;
+    private readonly IFileProvider _fileProvider;
+    private readonly TimeProviderMock _timeProvider;
+    private readonly NbpAppContextMock _dbContext;
+
+    private readonly GetAndSaveGoldPrices.Handler _handler;
+
+    public GetAndSaveGoldPricesTests()
     {
-        private readonly INbpApiClient _nbpApiClient;
-        private readonly IFileProvider _fileProvider;
-        private readonly TimeProviderMock _timeProvider;
-        private readonly NbpAppContextMock _dbContext;
+        _nbpApiClient = Substitute.For<INbpApiClient>();
+        _dbContext = NbpAppContextMock.Create();
+        _fileProvider = Substitute.For<IFileProvider>();
+        _timeProvider = new TimeProviderMock();
 
-        private readonly GetAndSaveGoldPrices.Handler _handler;
+        _handler = new GetAndSaveGoldPrices.Handler(_nbpApiClient, _fileProvider, _timeProvider, _dbContext);
+    }
 
-        public GetAndSaveGoldPricesTests()
+    [Fact]
+    public async Task Handle_NoGoldPricesFound_ReturnsErrorMessage()
+    {
+        // Arrange
+        var command = new GetAndSaveGoldPrices.Command();
+        _nbpApiClient.GetGoldPricesAsync(command, Arg.Any<CancellationToken>()).Returns([]);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.ErrorMessage.Should().Be("No gold prices found");
+    }
+
+    [Fact]
+    public async Task Handle_GoldPricesFound_SavesToDbAndFile()
+    {
+        // Arrange
+        var command = new GetAndSaveGoldPrices.Command();
+        var goldPrices = new[]
         {
-            _nbpApiClient = Substitute.For<INbpApiClient>();
-            _dbContext = NbpAppContextMock.Create();
-            _fileProvider = Substitute.For<IFileProvider>();
-            _timeProvider = new TimeProviderMock();
+            new NpbPriceDto { Date = new DateOnly(2023, 10, 1), Price = 100m },
+            new NpbPriceDto { Date = new DateOnly(2023, 10, 2), Price = 150m }
+        };
+        _nbpApiClient.GetGoldPricesAsync(command, Arg.Any<CancellationToken>()).Returns(goldPrices);
+        var currentTime = new DateTime(2023, 10, 3, 12, 0, 0);
+        _timeProvider.CurrentTime = currentTime;
 
-            _handler = new GetAndSaveGoldPrices.Handler(_nbpApiClient, _fileProvider, _timeProvider, _dbContext);
-        }
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
 
-        [Fact]
-        public async Task Handle_NoGoldPricesFound_ReturnsErrorMessage()
+        // Assert
+        _dbContext.GoldPrices.Should().BeEquivalentTo([
+            new GoldPrice { Date = goldPrices[0].Date, Price = 100 },
+            new GoldPrice { Date = goldPrices[1].Date, Price = 150 }
+        ]);
+
+        await _fileProvider.Received().WriteTextAsync(
+            $"gold_prices_request_{currentTime:yyyy-MM-dd_HH-mm-ss}.json",
+            """[{"date":"2023-10-01","price":100},{"date":"2023-10-02","price":150}]""",
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_GoldPricesFound_MergesWithExistingDbData()
+    {
+        // Arrange
+        _dbContext.GoldPrices.AddRange(
+            new GoldPrice { Date = new DateOnly(2023, 10, 1), Price = 100 },
+            new GoldPrice { Date = new DateOnly(2023, 10, 2), Price = 150 }
+        );
+        await _dbContext.SaveChangesAsync();
+        _dbContext.ChangeTracker.Clear();
+
+        var command = new GetAndSaveGoldPrices.Command();
+        var retrieved = new[]
         {
-            // Arrange
-            var command = new GetAndSaveGoldPrices.Command();
-            _nbpApiClient.GetGoldPricesAsync(command, Arg.Any<CancellationToken>()).Returns([]);
+            new NpbPriceDto { Date = new DateOnly(2023, 10, 2), Price = 200m },
+            new NpbPriceDto { Date = new DateOnly(2023, 10, 3), Price = 250m }
+        };
+        _nbpApiClient.GetGoldPricesAsync(command, Arg.Any<CancellationToken>()).Returns(retrieved);
+        _timeProvider.CurrentTime = new DateTime(2023, 10, 3, 12, 0, 0);
 
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
 
-            // Assert
-            result.ErrorMessage.Should().Be("No gold prices found");
-        }
+        // Assert
+        _dbContext.GoldPrices.Should().BeEquivalentTo([
+            new GoldPrice { Date = new DateOnly(2023, 10, 1), Price = 100 },
+            new GoldPrice { Date = new DateOnly(2023, 10, 2), Price = 200 },
+            new GoldPrice { Date = new DateOnly(2023, 10, 3), Price = 250 },
+        ]);
+    }
 
-        [Fact]
-        public async Task Handle_GoldPricesFound_SavesToDbAndFile()
+    [Fact]
+    public async Task Handle_GoldPricesFound_ReturnsCorrectResult()
+    {
+        // Arrange
+        var command = new GetAndSaveGoldPrices.Command();
+        var goldPrices = new[]
         {
-            // Arrange
-            var command = new GetAndSaveGoldPrices.Command();
-            var goldPrices = new[]
-            {
-                new NpbPriceDto { Date = new DateOnly(2023, 10, 1), Price = 100m },
-                new NpbPriceDto { Date = new DateOnly(2023, 10, 2), Price = 150m }
-            };
-            _nbpApiClient.GetGoldPricesAsync(command, Arg.Any<CancellationToken>()).Returns(goldPrices);
-            var currentTime = new DateTime(2023, 10, 3, 12, 0, 0);
-            _timeProvider.CurrentTime = currentTime;
+            new NpbPriceDto { Date = new DateOnly(2023, 10, 1), Price = 100m },
+            new NpbPriceDto { Date = new DateOnly(2023, 10, 2), Price = 150m },
+        };
+        _nbpApiClient.GetGoldPricesAsync(command, Arg.Any<CancellationToken>()).Returns(goldPrices);
 
-            // Act
-            await _handler.Handle(command, CancellationToken.None);
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-            // Assert
-            _dbContext.GoldPrices.Should().BeEquivalentTo([
-                new GoldPrice { Date = goldPrices[0].Date, Price = 100 },
-                new GoldPrice { Date = goldPrices[1].Date, Price = 150 }
-            ]);
-
-            await _fileProvider.Received().WriteTextAsync(
-                $"gold_prices_request_{currentTime:yyyy-MM-dd_HH-mm-ss}.json",
-                """[{"date":"2023-10-01","price":100},{"date":"2023-10-02","price":150}]""",
-                Arg.Any<CancellationToken>());
-        }
-
-        [Fact]
-        public async Task Handle_GoldPricesFound_MergesWithExistingDbData()
-        {
-            // Arrange
-            _dbContext.GoldPrices.AddRange(
-                new GoldPrice { Date = new DateOnly(2023, 10, 1), Price = 100 },
-                new GoldPrice { Date = new DateOnly(2023, 10, 2), Price = 150 }
-            );
-            await _dbContext.SaveChangesAsync();
-            _dbContext.ChangeTracker.Clear();
-
-            var command = new GetAndSaveGoldPrices.Command();
-            var retrieved = new[]
-            {
-                new NpbPriceDto { Date = new DateOnly(2023, 10, 2), Price = 200m },
-                new NpbPriceDto { Date = new DateOnly(2023, 10, 3), Price = 250m }
-            };
-            _nbpApiClient.GetGoldPricesAsync(command, Arg.Any<CancellationToken>()).Returns(retrieved);
-            _timeProvider.CurrentTime = new DateTime(2023, 10, 3, 12, 0, 0);
-
-            // Act
-            await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            _dbContext.GoldPrices.Should().BeEquivalentTo([
-                new GoldPrice { Date = new DateOnly(2023, 10, 1), Price = 100 },
-                new GoldPrice { Date = new DateOnly(2023, 10, 2), Price = 200 },
-                new GoldPrice { Date = new DateOnly(2023, 10, 3), Price = 250 },
-            ]);
-        }
-
-        [Fact]
-        public async Task Handle_GoldPricesFound_ReturnsCorrectResult()
-        {
-            // Arrange
-            var command = new GetAndSaveGoldPrices.Command();
-            var goldPrices = new[]
-            {
-                new NpbPriceDto { Date = new DateOnly(2023, 10, 1), Price = 100m },
-                new NpbPriceDto { Date = new DateOnly(2023, 10, 2), Price = 150m },
-            };
-            _nbpApiClient.GetGoldPricesAsync(command, Arg.Any<CancellationToken>()).Returns(goldPrices);
-
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            result.StartDatePrice.Should().Be(100m);
-            result.EndDatePrice.Should().Be(150m);
-            result.AveragePrice.Should().Be(125m);
-        }
+        // Assert
+        result.StartDatePrice.Should().Be(100m);
+        result.EndDatePrice.Should().Be(150m);
+        result.AveragePrice.Should().Be(125m);
     }
 }

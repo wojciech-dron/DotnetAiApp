@@ -30,8 +30,7 @@
 
     <ItemGroup>
       <Folder Include="Logic\" />
-      <Folder Include="Logs\" />
-      <Folder Include="Logs\ollama\" />
+      <Folder Include="Output\ollama\" />
     </ItemGroup>
 
     <!-- Disable experimental warnings-->

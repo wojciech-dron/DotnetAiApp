@@ -38,10 +38,10 @@ public static class Setup
     public static void SetAppCulture(this WebApplication webApplication)
     {
         var cultureOptions = new RequestLocalizationOptions()
-            .AddSupportedCultures("en-EN")
+            .AddSupportedCultures("en-EN", "pl-PL")
             .AddSupportedUICultures("en-EN");
 
-        var requestCulture = new RequestCulture("en-EN");
+        var requestCulture = new RequestCulture("pl-PL");
         requestCulture.Culture.DateTimeFormat.ShortDatePattern = "dd.MM.yyyy";
         cultureOptions.DefaultRequestCulture = requestCulture;
 

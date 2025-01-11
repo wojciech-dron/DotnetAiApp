@@ -38,11 +38,11 @@ public class LoggingDelegatingHandler : DelegatingHandler
 
         async Task LogResponse(HttpResponseMessage response)
         {
-            var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+            var responseBody = await GetResponseBody(response, cancellationToken);
 
             if (response.IsSuccessStatusCode) // 2XX
             {
-                _logger.LogInformation("Received {Status} response: {Method} {RequestUrl}, response: {ResponseBody}",
+                _logger.LogTrace("Received {Status} response: {Method} {RequestUrl}, response: {ResponseBody}",
                     response.StatusCode, method, requestUrl, responseBody);
             }
             else
@@ -54,12 +54,28 @@ public class LoggingDelegatingHandler : DelegatingHandler
         }
     }
 
-    private static async Task<string?> GetRequestBody(HttpRequestMessage request,
+    private async Task<string?> GetRequestBody(HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
+        if (_logger.IsEnabled(LogLevel.Trace))
+            return "";
+
         if (request.Content is null)
             return null;
 
         return await request.Content.ReadAsStringAsync(cancellationToken);
     }
+
+
+    private async Task<string> GetResponseBody(HttpResponseMessage response,
+        CancellationToken cancellationToken)
+    {
+        if (_logger.IsEnabled(LogLevel.Trace))
+            return "";
+
+        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        return responseBody;
+    }
+
 }
