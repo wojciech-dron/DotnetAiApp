@@ -55,7 +55,7 @@
     <div class="input-group mb-2">
         <input type="text"
                @bind="userInput" class="form-control"
-               @onkeydown="@(async (KeyboardEventArgs e) => await Enter(e))"
+               @onkeydown="@(async e => await Enter(e))"
                placeholder="Type a message..."/>
         <button type="button" class="btn btn-primary @(isLoading ? "disabled" : "")"
                 @onclick="SendMessage">
@@ -64,7 +64,7 @@
     </div>
 
     <div class="disclaimer justify-content-center">
-        GoldAiAgent utilizes a local language models with Ollama provider.
+        GoldAiAgent utilizes a local language models with Ollama provider or OpenAi compatible API.
         This agent incorporates plugins for fetching data from NBP API, getting current date/dime and saving files.
         <br/>
         <strong>Key Limitations:</strong>

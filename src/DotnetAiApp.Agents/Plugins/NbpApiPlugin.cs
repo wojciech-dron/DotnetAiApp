@@ -22,9 +22,9 @@ public class NbpApiPlugin
     [KernelFunction, Description("Gets an array of gold prices between startDate and endDate." +
                                  "All dates are in yyyy-mm-dd format." +
                                  "Returns an array of prices of 1g of gold in polish złoty in json format")]
-    public async Task<string> GetGoldPrices(DateOnly startDate, DateOnly endDate)
+    public async Task<string> GetGoldPrices(string startDate, string endDate)
     {
-        var request = new GoldPricesRequest(startDate, endDate);
+        var request = new GoldPricesRequest(DateOnly.Parse(startDate), DateOnly.Parse(endDate));
 
         var validationResult = await _validator.ValidateAsync(request);
         if (!validationResult.IsValid)

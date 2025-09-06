@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace DotnetAiApp.Agents.Common;
 
-public class OllamaChatLogger : DelegatingHandler
+public class ProviderChatLogger : DelegatingHandler
 {
     private static readonly string TimeFormat = "dd-MM-yy HH:mm z";
     private readonly string _outputFileName = $"ollama/{DateTime.Now:dd-MM-yy}.json";
@@ -13,7 +13,7 @@ public class OllamaChatLogger : DelegatingHandler
     private readonly IFileProvider _fileProvider;
     private readonly AiSettings _settings;
 
-    public OllamaChatLogger(IFileProvider fileProvider, IOptions<AiSettings> settings)
+    public ProviderChatLogger(IFileProvider fileProvider, IOptions<AiSettings> settings)
     {
         _fileProvider = fileProvider;
         _settings = settings.Value;

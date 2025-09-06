@@ -10,6 +10,7 @@
       <PackageReference Include="MediatR" Version="13.0.0" />
       <PackageReference Include="Microsoft.SemanticKernel" Version="1.64.0" />
       <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.64.0-alpha" />
+      <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.64.0" />
       <PackageReference Include="Microsoft.SemanticKernel.Planners.Handlebars" Version="1.47.0-preview" />
       <PackageReference Include="SemanticKernel.Assistants" Version="1.40.0" />
     </ItemGroup>
@@ -18,6 +19,10 @@
       <ProjectReference Include="..\DotnetAiApp.Db\DotnetAiApp.Db.csproj" />
       <ProjectReference Include="..\DotnetAiApp.HttpClients\DotnetAiApp.HttpClients.csproj" />
       <ProjectReference Include="..\DotnetAiApp.Core\DotnetAiApp.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Services\" />
     </ItemGroup>
 
     <!--        Disable experimental warnings-->

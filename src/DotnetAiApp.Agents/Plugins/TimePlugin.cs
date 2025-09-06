@@ -12,5 +12,5 @@ public class TimePlugin
     public string CurrentDate() => DateTimeOffset.Now.ToString("yyyy-mm-dd");
 
     [KernelFunction, Description("Get the current time")]
-    public DateTimeOffset CurrentTime() => DateTimeOffset.Now;
+    public string CurrentTime() => DateTimeOffset.Now.ToString("yyyy-mm-dd HH:mm:ss");
 }
