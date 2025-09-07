@@ -7,9 +7,9 @@ with db and file saving.
 
 ## Pre-requisites
 
-Ollama is required to enable ai features.
+Ollama is required to enable ai features. Alternatively, you can use OpenAI-compatible services.
 
-### Or install
+### Using Ollama
 
 Install ollama from [official website](https://ollama.com/download), then:.
 
@@ -17,7 +17,7 @@ Install ollama from [official website](https://ollama.com/download), then:.
     ollama run llama3.1:8b
 ```
 
-### Docker 
+### Using Docker with Ollama
 You can also run ollama with docker
 
 ```bash
@@ -25,6 +25,8 @@ You can also run ollama with docker
    docker exec -it ollama ollama run llama3.1:8b
 ```
 
+### Using OpenAI or OpenAI-compatible services
+To use OpenAI or other OpenAI-compatible services, you need to configure the AiSettings in appsettings.json with your API key and endpoint.
 
 ## Launch app
 
@@ -34,21 +36,26 @@ To run application, execute the following command in the project root folder:
 ```
 
 
-### Model support 
+### Model support
 This app supports all models with tools.
 You can find models with tools support in: https://ollama.com/search?c=tools.
 It requires pulling model with ollama and change in appsettings.json file.
 If you don't have GPU with at least 8GB VRAM consider using smaller models like llama3.2:1b
 
-Example:
+Example for Ollama:
 
 ```bash
   ollama run llama3.2:1b
 ```
 
-appsettings.json section:
+Example for OpenAI (uncomment and modify the AiSettings section in appsettings.json):
 
-```
-"AiSettings.ModelId": "llama3.2:1b"
+```json
+  "AiSettings": {
+    "Provider": "OpenAI",
+    "DefaultModelId": "gpt-4o", // or another OpenAI model
+    "ApiKey": "your-openai-api-key-here",
+    "OpenAIEndpoint": "https://api.openai.com/v1" // Optional, defaults to OpenAI's endpoint
+  }
 ```
 
