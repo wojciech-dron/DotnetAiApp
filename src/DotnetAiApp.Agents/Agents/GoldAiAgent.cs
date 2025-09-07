@@ -1,6 +1,6 @@
 ﻿using DotnetAiApp.Agents.Plugins;
 using DotnetAiApp.Core.Utils;
-using MediatR;
+using Mediator;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -23,7 +23,7 @@ public class GoldAiAgent
 
     public record Request(ChatHistory History) : IRequest<Result>;
 
-    internal class Handler : IRequestHandler<Request, Result>
+    public class Handler : IRequestHandler<Request, Result>
     {
         private readonly IChatCompletionService _chatService;
         private readonly Kernel _kernel;
@@ -45,7 +45,7 @@ public class GoldAiAgent
             _kernel.Plugins.AddFromObject(serviceProvider.GetRequiredService<FileProviderPlugin>());
         }
 
-        public async Task<Result> Handle(Request request, CancellationToken cancellationToken)
+        public async ValueTask<Result> Handle(Request request, CancellationToken cancellationToken)
         {
             var history = request.History;
 

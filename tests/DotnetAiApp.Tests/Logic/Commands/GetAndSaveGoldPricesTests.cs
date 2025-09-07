@@ -2,7 +2,6 @@
 using DotnetAiApp.Tests.Mocks;
 using FluentAssertions;
 using DotnetAiApp.Db.Entities;
-using DotnetAiApp.NbpApiClient;
 using DotnetAiApp.NbpApiClient.NbpApiClient;
 using DotnetAiApp.Web.Logic.Commands;
 using NSubstitute;

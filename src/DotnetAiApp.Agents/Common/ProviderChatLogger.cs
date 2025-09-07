@@ -7,7 +7,6 @@ namespace DotnetAiApp.Agents.Common;
 
 public class ProviderChatLogger : DelegatingHandler
 {
-    private static readonly string TimeFormat = "dd-MM-yy HH:mm z";
     private readonly string _outputFileName = $"ollama/{DateTime.Now:dd-MM-yy}.json";
 
     private readonly IFileProvider _fileProvider;

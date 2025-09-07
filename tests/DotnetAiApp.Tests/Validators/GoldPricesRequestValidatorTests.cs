@@ -1,6 +1,5 @@
 ﻿using DotnetAiApp.Core.Utils;
 using FluentValidation.TestHelper;
-using DotnetAiApp.NbpApiClient;
 using DotnetAiApp.NbpApiClient.NbpApiClient;
 using NSubstitute;
 

@@ -1,12 +1,11 @@
 ﻿using System.Text.Json;
 using DotnetAiApp.Core.Utils;
-using EFCore.BulkExtensions;
 using FluentValidation;
-using MediatR;
 using DotnetAiApp.Db;
 using DotnetAiApp.Db.Entities;
-using DotnetAiApp.NbpApiClient;
 using DotnetAiApp.NbpApiClient.NbpApiClient;
+using Mediator;
+using Microsoft.EntityFrameworkCore;
 
 namespace DotnetAiApp.Web.Logic.Commands;
 
@@ -44,7 +43,7 @@ public class GetAndSaveGoldPrices
             _context = context;
         }
 
-        public async Task<GoldPriceResult> Handle(Command request, CancellationToken cancellationToken)
+        public async ValueTask<GoldPriceResult> Handle(Command request, CancellationToken cancellationToken)
         {
             var goldPrices = await _nbpApiClient.GetGoldPricesAsync(request, cancellationToken);
 
@@ -56,7 +55,7 @@ public class GetAndSaveGoldPrices
                 };
             }
 
-            await SavePricesToDb(goldPrices, cancellationToken);
+            await SavePricesToDb(request, goldPrices, cancellationToken);
             await SavePricesToJsonFile(goldPrices, cancellationToken);
 
             return new GoldPriceResult
@@ -67,15 +66,31 @@ public class GetAndSaveGoldPrices
             };
         }
 
-        private async Task SavePricesToDb(NpbPriceDto[] pricesDtos, CancellationToken cancellationToken)
+        private async Task SavePricesToDb(Command request, NpbPriceDto[] pricesDtos, CancellationToken cancellationToken)
         {
-            var entities = pricesDtos.Select(gp => new GoldPrice
-            {
-                Date = gp.Date,
-                Price = (double)gp.Price
-            });
+            var existing = await _context.GoldPrices
+                .Where(gp => gp.Date >= request.StartDate && gp.Date <= request.EndDate)
+                .ToListAsync(cancellationToken);
 
-            await _context.BulkInsertOrUpdateAsync(entities, cancellationToken: cancellationToken);
+            foreach (var priceDto in pricesDtos)
+            {
+                var existingEntity = existing.FirstOrDefault(gp => gp.Date == priceDto.Date);
+                if (existingEntity is not null)
+                {
+                    existingEntity.Price = (double)priceDto.Price;
+                    continue;
+                }
+
+                var entity = new GoldPrice
+                {
+                    Date = priceDto.Date,
+                    Price = (double)priceDto.Price
+                };
+
+                _context.Add(entity);
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         private async Task SavePricesToJsonFile(NpbPriceDto[] goldPrices, CancellationToken cancellationToken)

@@ -1,6 +1,6 @@
 ﻿using DotnetAiApp.Core.Utils;
 using FluentValidation;
-using MediatR;
+using Mediator;
 
 namespace DotnetAiApp.Web.Logic.Behaviours;
 
@@ -16,12 +16,11 @@ public sealed class ValidationBehavior<TRequest, TResponse>
         _validators = validators;
     }
 
-    public async Task<TResponse> Handle(
-        TRequest request,
-        RequestHandlerDelegate<TResponse> next,
+    public async ValueTask<TResponse> Handle(TRequest message,
+        MessageHandlerDelegate<TRequest, TResponse> next,
         CancellationToken cancellationToken)
     {
-        var context = new ValidationContext<TRequest>(request);
+        var context = new ValidationContext<TRequest>(message);
 
         var validationFailures = await Task.WhenAll(
             _validators.Select(validator => validator.ValidateAsync(context, cancellationToken)));
@@ -43,7 +42,7 @@ public sealed class ValidationBehavior<TRequest, TResponse>
             };
         }
 
-        var response = await next();
+        var response = await next(message, cancellationToken);
 
         return response;
     }

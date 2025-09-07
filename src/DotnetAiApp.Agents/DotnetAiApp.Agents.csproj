@@ -7,8 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MediatR" Version="13.0.0" />
       <PackageReference Include="Microsoft.SemanticKernel" Version="1.64.0" />
+      <PackageReference Include="Microsoft.SemanticKernel.Agents.Abstractions" Version="1.64.0" />
+      <PackageReference Include="Microsoft.SemanticKernel.Agents.Core" Version="1.64.0" />
       <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.64.0-alpha" />
       <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.64.0" />
       <PackageReference Include="Microsoft.SemanticKernel.Planners.Handlebars" Version="1.47.0-preview" />

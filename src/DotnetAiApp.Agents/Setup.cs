@@ -1,9 +1,8 @@
-﻿using System.ClientModel;
-using DotnetAiApp.Agents.Agents;
+﻿using DotnetAiApp.Agents.Agents;
 using DotnetAiApp.Agents.Common;
 using DotnetAiApp.Agents.Plugins;
 using DotnetAiApp.Agents.Settings;
-using MediatR;
+using Mediator;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +11,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using OllamaSharp;
-using OpenAI;
 
 #pragma warning disable SKEXP0001
 

@@ -1,9 +1,9 @@
 ﻿using DotnetAiApp.Core.Extensions;
 using DotnetAiApp.Core.Pagination;
 using DotnetAiApp.Web.Dtos;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using DotnetAiApp.Db;
+using Mediator;
 
 namespace DotnetAiApp.Web.Logic.Queries;
 
@@ -26,7 +26,7 @@ public class GetSavedPrices
             _context = context;
         }
 
-        public async Task<PagedList<SavedPriceDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async ValueTask<PagedList<SavedPriceDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var result = await _context.GoldPrices
                 .AsNoTracking()

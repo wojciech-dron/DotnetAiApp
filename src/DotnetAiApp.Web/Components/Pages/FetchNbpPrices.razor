@@ -2,9 +2,9 @@
 @rendermode InteractiveServer
 
 @using DotnetAiApp.Core.Utils
-@using MediatR
 @using Morris.Blazor.Validation
 @using DotnetAiApp.Web.Logic.Commands
+@using global::Mediator
 
 <PageTitle>Nbp gold prices</PageTitle>
 <EditForm Model=@request OnValidSubmit=FetchGoldPrices >

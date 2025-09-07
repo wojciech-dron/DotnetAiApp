@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using MediatR.Pipeline;
 using Microsoft.AspNetCore.Localization;
 using Morris.Blazor.Validation;
 using DotnetAiApp.Agents;
@@ -7,6 +6,7 @@ using DotnetAiApp.Core;
 using DotnetAiApp.Web.Logic.Behaviours;
 using DotnetAiApp.Db;
 using DotnetAiApp.NbpApiClient;
+using Mediator;
 
 namespace DotnetAiApp.Web;
 
@@ -50,12 +50,17 @@ public static class Setup
 
     private static IServiceCollection AddMediatrForDotnetAiApp(this IServiceCollection services)
     {
-        services.AddTransient(typeof(IRequestExceptionHandler<,,>), typeof(ExceptionLoggingHandler<,,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionLoggingHandler<,>));
 
-        services.AddMediatR(cfg =>
+        services.AddMediator(options =>
         {
-            cfg.RegisterServicesFromAssembly(typeof(Setup).Assembly);
-            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            options.Namespace = "DotnetAiApp.Mediator";
+            options.ServiceLifetime = ServiceLifetime.Scoped;
+            options.GenerateTypesAsInternal = true;
+            options.NotificationPublisherType = typeof(ForeachAwaitPublisher);
+            options.Assemblies = [typeof(IAgents).Assembly, typeof(Setup).Assembly];
+            options.PipelineBehaviors = [];
+            options.StreamPipelineBehaviors = [];
         });
 
         return services;

@@ -2,7 +2,6 @@
 using System.Text.Json;
 using FluentValidation;
 using Microsoft.SemanticKernel;
-using DotnetAiApp.NbpApiClient;
 using DotnetAiApp.NbpApiClient.NbpApiClient;
 
 namespace DotnetAiApp.Agents.Plugins;
