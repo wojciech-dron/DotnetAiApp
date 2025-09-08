@@ -48,8 +48,8 @@ public class GetAndSaveGoldPricesTests
         var command = new GetAndSaveGoldPrices.Command();
         var goldPrices = new[]
         {
-            new NpbPriceDto { Date = new DateOnly(2023, 10, 1), Price = 100m },
-            new NpbPriceDto { Date = new DateOnly(2023, 10, 2), Price = 150m }
+            new NpbPriceDto { Date = new DateTime(2023, 10, 1), Price = 100m },
+            new NpbPriceDto { Date = new DateTime(2023, 10, 2), Price = 150m }
         };
         _nbpApiClient.GetGoldPricesAsync(command, Arg.Any<CancellationToken>()).Returns(goldPrices);
         var currentTime = new DateTime(2023, 10, 3, 12, 0, 0);
@@ -75,8 +75,8 @@ public class GetAndSaveGoldPricesTests
     {
         // Arrange
         _dbContext.GoldPrices.AddRange(
-            new GoldPrice { Date = new DateOnly(2023, 10, 1), Price = 100 },
-            new GoldPrice { Date = new DateOnly(2023, 10, 2), Price = 150 }
+            new GoldPrice { Date = new DateTime(2023, 10, 1), Price = 100 },
+            new GoldPrice { Date = new DateTime(2023, 10, 2), Price = 150 }
         );
         await _dbContext.SaveChangesAsync();
         _dbContext.ChangeTracker.Clear();
@@ -84,8 +84,8 @@ public class GetAndSaveGoldPricesTests
         var command = new GetAndSaveGoldPrices.Command();
         var retrieved = new[]
         {
-            new NpbPriceDto { Date = new DateOnly(2023, 10, 2), Price = 200m },
-            new NpbPriceDto { Date = new DateOnly(2023, 10, 3), Price = 250m }
+            new NpbPriceDto { Date = new DateTime(2023, 10, 2), Price = 200m },
+            new NpbPriceDto { Date = new DateTime(2023, 10, 3), Price = 250m }
         };
         _nbpApiClient.GetGoldPricesAsync(command, Arg.Any<CancellationToken>()).Returns(retrieved);
         _timeProvider.CurrentTime = new DateTime(2023, 10, 3, 12, 0, 0);
@@ -95,9 +95,9 @@ public class GetAndSaveGoldPricesTests
 
         // Assert
         _dbContext.GoldPrices.Should().BeEquivalentTo([
-            new GoldPrice { Date = new DateOnly(2023, 10, 1), Price = 100 },
-            new GoldPrice { Date = new DateOnly(2023, 10, 2), Price = 200 },
-            new GoldPrice { Date = new DateOnly(2023, 10, 3), Price = 250 },
+            new GoldPrice { Date = new DateTime(2023, 10, 1), Price = 100 },
+            new GoldPrice { Date = new DateTime(2023, 10, 2), Price = 200 },
+            new GoldPrice { Date = new DateTime(2023, 10, 3), Price = 250 },
         ]);
     }
 
@@ -108,8 +108,8 @@ public class GetAndSaveGoldPricesTests
         var command = new GetAndSaveGoldPrices.Command();
         var goldPrices = new[]
         {
-            new NpbPriceDto { Date = new DateOnly(2023, 10, 1), Price = 100m },
-            new NpbPriceDto { Date = new DateOnly(2023, 10, 2), Price = 150m },
+            new NpbPriceDto { Date = new DateTime(2023, 10, 1), Price = 100m },
+            new NpbPriceDto { Date = new DateTime(2023, 10, 2), Price = 150m },
         };
         _nbpApiClient.GetGoldPricesAsync(command, Arg.Any<CancellationToken>()).Returns(goldPrices);
 

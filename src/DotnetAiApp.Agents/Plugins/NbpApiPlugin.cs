@@ -23,7 +23,7 @@ public class NbpApiPlugin
                                  "Returns an array of prices of 1g of gold in polish złoty in json format")]
     public async Task<string> GetGoldPrices(string startDate, string endDate)
     {
-        var request = new GoldPricesRequest(DateOnly.Parse(startDate), DateOnly.Parse(endDate));
+        var request = new GoldPricesRequest(DateTime.Parse(startDate), DateTime.Parse(endDate));
 
         var validationResult = await _validator.ValidateAsync(request);
         if (!validationResult.IsValid)
@@ -39,4 +39,4 @@ public class NbpApiPlugin
     }
 }
 
-public record GoldPricesRequest(DateOnly? StartDate, DateOnly? EndDate) : IGetGoldPricesRequest;
+public record GoldPricesRequest(DateTime? StartDate, DateTime? EndDate) : IGetGoldPricesRequest;

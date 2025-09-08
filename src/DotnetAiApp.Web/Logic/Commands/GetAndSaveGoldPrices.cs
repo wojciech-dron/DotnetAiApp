@@ -13,8 +13,8 @@ public class GetAndSaveGoldPrices
 {
     public class Command : IRequest<GoldPriceResult>, IGetGoldPricesRequest
     {
-        public DateOnly? StartDate { get; set; }
-        public DateOnly? EndDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 
     public class Validator : AbstractValidator<Command>

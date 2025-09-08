@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EFCoreSecondLevelCacheInterceptor;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,6 +9,12 @@ public static class Setup
 {
     public static IServiceCollection AddDotnetAiAppDb(this IServiceCollection services)
     {
+        services.AddEFSecondLevelCache(options =>
+            options.UseMemoryCacheProvider()
+                .UseCacheKeyPrefix("EF_")
+                .UseDbCallsIfCachingProviderIsDown(TimeSpan.FromMinutes(1))
+        );
+
         services.AddDbContext<DotentAiAppContext>((serviceProvider, options) =>
         {
             var connectionString = serviceProvider
@@ -16,6 +23,9 @@ public static class Setup
 
             options.UseSqlite(connectionString, o =>
                 o.MigrationsAssembly(typeof(Setup).Assembly));
+
+            var cacheInterceptor = serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>();
+            options.AddInterceptors(cacheInterceptor);
         });
 
         return services;

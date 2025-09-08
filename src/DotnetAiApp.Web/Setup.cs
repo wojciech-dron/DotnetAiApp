@@ -54,7 +54,7 @@ public static class Setup
 
         services.AddMediator(options =>
         {
-            options.Namespace = "DotnetAiApp.Mediator";
+            options.Namespace = "DotnetAiApp.MediatorGenerated";
             options.ServiceLifetime = ServiceLifetime.Scoped;
             options.GenerateTypesAsInternal = true;
             options.NotificationPublisherType = typeof(ForeachAwaitPublisher);

@@ -13,11 +13,11 @@ namespace DotnetAiApp.Tests.Validators
 
         public GoldPricesRequestValidatorTests()
         {
-            _timeProvider.CurrentDate.Returns(new DateOnly(2023, 10, 1));
+            _timeProvider.CurrentDate.Returns(new DateTime(2023, 10, 1));
             _validator = new GoldPricesRequestValidator(_timeProvider);
         }
 
-        record GetGoldPricesRequest(DateOnly? StartDate, DateOnly? EndDate) : IGetGoldPricesRequest;
+        record GetGoldPricesRequest(DateTime? StartDate, DateTime? EndDate) : IGetGoldPricesRequest;
 
         [Fact]
         public void NoStartDateProvided_HasValidationErrorForStartDate()
@@ -34,7 +34,7 @@ namespace DotnetAiApp.Tests.Validators
         public void StartDateBeforeMinDate_HasValidationErrorForStartDate()
         {
             // Arrange
-            var request = new GetGoldPricesRequest(new DateOnly(2012, 12, 31), null);
+            var request = new GetGoldPricesRequest(new DateTime(2012, 12, 31), null);
 
             // Act & Assert
             _validator.TestValidate(request)
@@ -45,9 +45,9 @@ namespace DotnetAiApp.Tests.Validators
         public void EndDateAfterCurrentDate_HasValidationErrorForEndDate()
         {
             // Arrange
-            var request = new GetGoldPricesRequest(new DateOnly(2023, 10, 1), new DateOnly(2023, 10, 2));
+            var request = new GetGoldPricesRequest(new DateTime(2023, 10, 1), new DateTime(2023, 10, 2));
 
-            _timeProvider.CurrentDate.Returns(new DateOnly(2023, 10, 1));
+            _timeProvider.CurrentDate.Returns(new DateTime(2023, 10, 1));
 
             // Act & Assert
             _validator.TestValidate(request)
@@ -58,7 +58,7 @@ namespace DotnetAiApp.Tests.Validators
         public void EndDateBeforeStartDate_HasValidationErrorForEndDate()
         {
             // Arrange
-            var request = new GetGoldPricesRequest(new DateOnly(2023, 10, 2), new DateOnly(2023, 10, 1));
+            var request = new GetGoldPricesRequest(new DateTime(2023, 10, 2), new DateTime(2023, 10, 1));
 
             // Act & Assert
             _validator.TestValidate(request)
@@ -69,7 +69,7 @@ namespace DotnetAiApp.Tests.Validators
         public void DateSpanExceedsMaxSpanDays_HasValidationErrorForEndDate()
         {
             // Arrange
-            var request = new GetGoldPricesRequest(new DateOnly(2023, 10, 1), new DateOnly(2024, 4, 1));
+            var request = new GetGoldPricesRequest(new DateTime(2023, 10, 1), new DateTime(2024, 4, 1));
 
             // Act & Assert
             _validator.TestValidate(request)
@@ -80,7 +80,7 @@ namespace DotnetAiApp.Tests.Validators
         public void ValidDates_HasNoValidationErrors()
         {
             // Arrange
-            var request = new GetGoldPricesRequest(new DateOnly(2023, 10, 1), new DateOnly(2023, 10, 1));
+            var request = new GetGoldPricesRequest(new DateTime(2023, 10, 1), new DateTime(2023, 10, 1));
 
             // Act & Assert
             _validator.TestValidate(request)

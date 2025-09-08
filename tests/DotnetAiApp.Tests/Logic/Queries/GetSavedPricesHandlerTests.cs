@@ -34,13 +34,13 @@ public class GetSavedPricesHandlerTests
     public async Task GivenDateRange_ReturnsFilteredResults()
     {
         // Arrange
-        var startDate = new DateOnly(2023, 1, 1);
-        var endDate = new DateOnly(2023, 1, 31);
+        var startDate = new DateTime(2023, 1, 1);
+        var endDate = new DateTime(2023, 1, 31);
         var query = new GetSavedPrices.Query { StartDate = startDate, EndDate = endDate };
         var goldPrices = new List<GoldPrice>
         {
-            new() { Date = new DateOnly(2023, 1, 15), Price = 100 },
-            new() { Date = new DateOnly(2023, 2, 15), Price = 150 }
+            new() { Date = new DateTime(2023, 1, 15), Price = 100 },
+            new() { Date = new DateTime(2023, 2, 15), Price = 150 }
         };
         _context.GoldPrices.AddRange(goldPrices);
         await _context.SaveChangesAsync();
@@ -50,7 +50,7 @@ public class GetSavedPricesHandlerTests
 
         // Assert
         result.Data.Should().HaveCount(1);
-        result.Data.First().Date.Should().Be(new DateOnly(2023, 1, 15));
+        result.Data.First().Date.Should().Be(new DateTime(2023, 1, 15));
     }
 
     [Fact]
@@ -62,8 +62,8 @@ public class GetSavedPricesHandlerTests
         var query = new GetSavedPrices.Query { MinPrice = minPrice, MaxPrice = maxPrice };
         var goldPrices = new List<GoldPrice>
         {
-            new() { Date = new DateOnly(2023, 1, 15), Price = 100 },
-            new() { Date = new DateOnly(2023, 1, 16), Price = 80 }
+            new() { Date = new DateTime(2023, 1, 15), Price = 100 },
+            new() { Date = new DateTime(2023, 1, 16), Price = 80 }
         };
         _context.GoldPrices.AddRange(goldPrices);
         await _context.SaveChangesAsync();
@@ -80,8 +80,8 @@ public class GetSavedPricesHandlerTests
     public async Task GivenAllFilters_ReturnsFilteredResults()
     {
         // Arrange
-        var startDate = new DateOnly(2023, 1, 1);
-        var endDate = new DateOnly(2023, 1, 31);
+        var startDate = new DateTime(2023, 1, 1);
+        var endDate = new DateTime(2023, 1, 31);
         var minPrice = 90.0;
         var maxPrice = 110.0;
         var query = new GetSavedPrices.Query
@@ -93,9 +93,9 @@ public class GetSavedPricesHandlerTests
         };
         var goldPrices = new List<GoldPrice>
         {
-            new() { Date = new DateOnly(2023, 1, 15), Price = 100 },
-            new() { Date = new DateOnly(2023, 1, 16), Price = 80 },
-            new() { Date = new DateOnly(2024, 1, 15), Price = 100 }
+            new() { Date = new DateTime(2023, 1, 15), Price = 100 },
+            new() { Date = new DateTime(2023, 1, 16), Price = 80 },
+            new() { Date = new DateTime(2024, 1, 15), Price = 100 }
         };
         _context.GoldPrices.AddRange(goldPrices);
         await _context.SaveChangesAsync();
@@ -105,7 +105,7 @@ public class GetSavedPricesHandlerTests
 
         // Assert
         result.Data.Should().HaveCount(1);
-        result.Data.First().Date.Should().Be(new DateOnly(2023, 1, 15));
+        result.Data.First().Date.Should().Be(new DateTime(2023, 1, 15));
         result.Data.First().Price.Should().Be(100);
     }
 }

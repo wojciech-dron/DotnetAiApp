@@ -1,3 +1,3 @@
 ﻿namespace DotnetAiApp.Web.Dtos;
 
-public record SavedPriceDto(DateOnly Date, decimal Price);
+public record SavedPriceDto(DateTime Date, decimal Price);

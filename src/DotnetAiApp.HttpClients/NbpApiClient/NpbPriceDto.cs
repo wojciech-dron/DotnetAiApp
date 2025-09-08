@@ -5,7 +5,7 @@ namespace DotnetAiApp.NbpApiClient.NbpApiClient;
 public class NpbPriceDto
 {
     [JsonPropertyName("data")]
-    public DateOnly Date { get; init; }
+    public DateTime Date { get; init; }
 
     [JsonPropertyName("cena")]
     public decimal Price { get; init; }

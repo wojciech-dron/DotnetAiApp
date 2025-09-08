@@ -6,7 +6,7 @@ namespace DotnetAiApp.NbpApiClient.NbpApiClient;
 public sealed class GoldPricesRequestValidator : AbstractValidator<IGetGoldPricesRequest>
 {
     private const int MaxSpanDays = 180;
-    private static readonly DateOnly MinDate = new(2013, 01, 01);
+    private static readonly DateTime MinDate = new(2013, 01, 01);
 
     public GoldPricesRequestValidator(ITimeProvider timeProvider)
     {
@@ -22,7 +22,7 @@ public sealed class GoldPricesRequestValidator : AbstractValidator<IGetGoldPrice
             .GreaterThan(MinDate)
             .LessThanOrEqualTo(timeProvider.CurrentDate)
             .GreaterThanOrEqualTo(c => c.StartDate)
-            .Must((command, endDate) => endDate!.Value.DayNumber - command.StartDate!.Value.DayNumber <= MaxSpanDays)
+            .Must((command, endDate) => (endDate!.Value - command.StartDate!.Value).Days <= MaxSpanDays)
             .When(command => command.StartDate is not null)
             .WithMessage($"Span must be less than a {MaxSpanDays} days");
     }

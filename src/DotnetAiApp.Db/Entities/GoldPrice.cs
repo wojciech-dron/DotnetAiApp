@@ -5,7 +5,7 @@ namespace DotnetAiApp.Db.Entities;
 
 public class GoldPrice
 {
-    public DateOnly Date { get; set; }
+    public DateTime Date { get; set; }
 
     /// <remarks> SQLite does not support decimal ORDER BY expressions </remarks>
     public double Price { get; set; }

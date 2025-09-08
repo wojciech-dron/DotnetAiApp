@@ -3,11 +3,11 @@
 public interface ITimeProvider
 {
     DateTime CurrentTime { get; }
-    DateOnly CurrentDate { get; }
+    DateTime CurrentDate { get; }
 }
 
 public class TimeProvider : ITimeProvider
 {
     public DateTime CurrentTime => DateTime.UtcNow;
-    public DateOnly CurrentDate => DateOnly.FromDateTime(CurrentTime);
+    public DateTime CurrentDate => CurrentTime.Date;
 }

@@ -40,6 +40,6 @@ internal class NbpApiClient : INbpApiClient
 
 public interface IGetGoldPricesRequest
 {
-    public DateOnly? StartDate { get; }
-    public DateOnly? EndDate { get; }
+    public DateTime? StartDate { get; }
+    public DateTime? EndDate { get; }
 }
